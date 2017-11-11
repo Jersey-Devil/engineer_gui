@@ -38,8 +38,9 @@ MainWindow::MainWindow(QWidget *parent) :
     qApp->installEventFilter(this);
 
     //dialog shown while connecting to robot
-    dialog = new QProgressDialog("Connecting to robot...", "Cancel", 0, 0);
-    dialog->setWindowModality(Qt::WindowModal);
+    //useless shit, I wanna remove it
+//    dialog = new QProgressDialog("Connecting to robot...", "Cancel", 0, 0);
+//    dialog->setWindowModality(Qt::WindowModal);
 
     //telemetry values init
     QTableWidget *widget = ui->telemetryView;
@@ -107,9 +108,11 @@ int MainWindow::validateValue(QString value){
 //Destructor
 MainWindow::~MainWindow()
 {
-    delete dialog, form;
+//    delete dialog;
+    delete form;
     delete ui;
-    delete robot, settings;
+    delete robot;
+    delete settings;
 }
 
 //slot called to handle Light checkbox
@@ -127,11 +130,12 @@ void MainWindow::on_lightToggle_clicked()
  */
 void MainWindow::on_connectButton_clicked()
 {
-    if (!robot->isConnected){
+    if (!robot->isConnected && !robot->isConnecting){
         robot->connectToEngineer();
+        ui->connectButton->setText("Connecting...");
         //show dialog
         //it is hidden after udpclient emits signal
-        dialog->exec();
+//        dialog->exec();
     }
     else{
         robot->isConnected=false;
@@ -373,8 +377,9 @@ void MainWindow::setTelemetry(char *data){
 void MainWindow::connectedToRobotUI(){
     ui->connectButton->setText("Disconnect");
     robot->isConnected = true;
+    robot->isConnecting = false;
     setEnabledAllControls(true);
-    dialog->hide();
+//    dialog->hide();
 }
 
 //called when robot connected with true value and with false when disconnected

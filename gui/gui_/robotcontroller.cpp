@@ -26,6 +26,7 @@ RobotController::RobotController(Robot *r):QObject()
     packet = getBasicPacket();
 
     //move client to another thread
+    client->moveFieldsToThread(clientThread);
     client->moveToThread(clientThread);
 
     //connect it to make it parallel

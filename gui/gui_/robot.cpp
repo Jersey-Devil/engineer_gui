@@ -141,6 +141,7 @@ Robot::~Robot(){
 //set client to connect to robot
 //see RobotController class for details
 void Robot::connectToEngineer(){
+    this->isConnecting = true;
     controller->connectClient();
 }
 

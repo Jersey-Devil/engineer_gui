@@ -63,6 +63,8 @@ public:
 
     //sends single packet, needed for Light
     void sendPacket(RemoteControlPacket packet);
+    QTimer* getTimer();
+    void moveFieldsToThread(QThread *t);
     ~UDPClient();
 
     //method that starts to connect to robot, entry method(!)

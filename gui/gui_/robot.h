@@ -124,6 +124,7 @@ signals:
 public:
     //Flag to handle connection
     bool isConnected = false;
+    bool isConnecting = false;
     RobotConfiguration *configuration;
     RobotPositionController *positionController;
 };

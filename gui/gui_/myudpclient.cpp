@@ -9,7 +9,6 @@
 #include "QByteArray"
 #include "QDebug"
 #include "QThread"
-#include "QTimer"
 #include "QFile"
 #include "robotcontroller.h"
 #include "QUdpSocket"
@@ -25,12 +24,13 @@ UDPClient::UDPClient(RobotController *controller):QObject()
 {
     //configure conection values
     m_pudp = new QUdpSocket(this);
-//    robotAddress = new QHostAddress("10.42.0.1");
-    robotAddress = new QHostAddress("127.0.0.1");
+    robotAddress = new QHostAddress("10.42.0.1");
     this->controller = controller;
     //timer for package sending
     timer = new QTimer();
 }
+
+
 
 
 /**
@@ -73,7 +73,8 @@ void UDPClient::listenRobot(){
         }else{
             //remove unnecessary
             delete[] buffer;
-            return;}
+            return;
+        }
     }while (!in.atEnd());
 
 }
@@ -100,6 +101,17 @@ void UDPClient::sendPacket(RemoteControlPacket packet){
     out.writeRawData((char*)&packet,57);
     m_pudp->writeDatagram(baDatagram,*robotAddress,ROBOT_PORT);
 
+}
+
+QTimer *UDPClient::getTimer()
+{
+    return timer;
+}
+
+void UDPClient::moveFieldsToThread(QThread *t)
+{
+    timer->moveToThread(t);
+//    m_pudp->moveToThread(t);
 }
 
 //can be used for logs
