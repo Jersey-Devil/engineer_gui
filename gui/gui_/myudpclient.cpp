@@ -24,7 +24,8 @@ UDPClient::UDPClient(RobotController *controller):QObject()
 {
     //configure conection values
     m_pudp = new QUdpSocket(this);
-    robotAddress = new QHostAddress("10.42.0.1");
+    robotAddress = new QHostAddress("127.0.0.1");
+//    robotAddress = new QHostAddress("10.42.0.1");
     this->controller = controller;
     //timer for package sending
     timer = new QTimer();
@@ -111,7 +112,6 @@ QTimer *UDPClient::getTimer()
 void UDPClient::moveFieldsToThread(QThread *t)
 {
     timer->moveToThread(t);
-//    m_pudp->moveToThread(t);
 }
 
 //can be used for logs
@@ -165,6 +165,7 @@ void UDPClient::disconnectFromRobot(){
     m_pudp->disconnectFromHost();
     //stop timer
     timer->stop();
+    isConntected = false;
     //remove signals
     disconnect(m_pudp,SIGNAL(readyRead()),this,SLOT(listenRobot()));
     disconnect(m_pudp,SIGNAL(connected()),this,SLOT(startTimerTask()));

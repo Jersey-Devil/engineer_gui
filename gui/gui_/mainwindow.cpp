@@ -120,7 +120,8 @@ MainWindow::~MainWindow()
 void MainWindow::on_lightToggle_clicked()
 {
     isLight = !isLight;
-    robot->turnLight();
+    //temporary diabled
+//    robot->turnLight();
 }
 
 /**
@@ -138,9 +139,8 @@ void MainWindow::on_connectButton_clicked()
 //        dialog->exec();
     }
     else{
-        robot->isConnected=false;
+        robot->disconnectFromEngineer();
         setEnabledAllControls(false);
-        robot->controller->disconnectClient();
         ui->connectButton->setText("Connect");
     }
 }
@@ -204,11 +204,12 @@ void MainWindow::on_acceptForms_clicked()
  */
 void MainWindow::on_platformF_valueChanged(int value)
 {
-    if (value%10==0)
+    if (value%10==0) {
         if (value==50)
             robot->controller->stopPlatformD();
         else
             robot->moveD(getRealSpeed(value, robot->configuration->platformForwardSpeed));
+    }
 }
 
 

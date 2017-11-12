@@ -32,6 +32,10 @@ public: UDPClient *client;
 signals:
     void connectedToRobot();
 
+    //method to disconnect Client
+    void disconnectClient();
+    void connectClient();
+
 public:
     /*
      * The packet client sends to robot
@@ -77,11 +81,6 @@ public:
     void stopGripper();
     void stopFlippers();
 
-    //method to connect to robot
-    void connectClient();
-
-    //method to disconnect Client
-    void disconnectClient();
 
 
 };

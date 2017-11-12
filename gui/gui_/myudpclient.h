@@ -48,6 +48,7 @@ private:
     QHostAddress *robotAddress;
     void writeInputToFile(char *data);
 
+
     //controller needed to get packets
     RobotController *controller;
 

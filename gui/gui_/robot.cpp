@@ -142,7 +142,14 @@ Robot::~Robot(){
 //see RobotController class for details
 void Robot::connectToEngineer(){
     this->isConnecting = true;
-    controller->connectClient();
+    emit controller->connectClient();
+}
+
+void Robot::disconnectFromEngineer()
+{
+    this->isConnecting = false;
+    this->isConnected = false;
+    emit controller->disconnectClient();
 }
 
 

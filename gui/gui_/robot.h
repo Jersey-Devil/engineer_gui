@@ -107,6 +107,7 @@ public:
      * Actually it calles robotController's method, which envokes UDPClient
      */
     void connectToEngineer();
+    void disconnectFromEngineer();
 
 
     //returns configuration object
