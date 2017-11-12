@@ -3,6 +3,8 @@
 #include <QByteArray>
 #include <QStringBuilder>
 #include <QString>
+#include <cfloat>
+#include <algorithm>
 #include "myudpclient.h"
 #include "robotPackets.h"
 #include "robot.h"
@@ -38,6 +40,12 @@ RobotController::RobotController(Robot *r):QObject()
 }
 
 RobotController::~RobotController(){
+    clientThread->quit();
+    if(!clientThread->wait(3000)) //Wait until it actually has terminated (max. 3 sec)
+    {
+        clientThread->terminate(); //Thread didn't exit in time, probably deadlocked, terminate it!
+        clientThread->wait(); //We have to wait again here!
+    }
     delete client;
     delete clientThread;
     delete packet;

@@ -78,6 +78,8 @@ private slots:
 
     void on_acceptButton_clicked();
 
+    void handleVideoFrame(char* data, int length);
+
 public slots:
     //slot to control telemetry from client(robot) and show it
     void setTelemetry(char *data);

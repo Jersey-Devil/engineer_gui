@@ -26,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //The object, using which the manipulations are made
     robot = new Robot();
+    connect(robot, SIGNAL(videoFrameSended(char*, int)), this, SLOT(handleVideoFrame(char*, int)));
 
     //settings, like speed, see settingsdialog.h for details
     settings = new SettingsDialog(this,robot->configuration);
@@ -242,10 +243,10 @@ void MainWindow::on_platformR_valueChanged(int value)
 bool MainWindow::eventFilter(QObject *obj, QEvent *event){
     if (event->type()==QEvent::KeyPress || event->type()==QEvent::KeyRelease) {
         QKeyEvent* key = static_cast<QKeyEvent*>(event);
-        qDebug() << "type: " << event->type() << "\n"
-                 << "text: " << key->text() << "\n"
-                 << "count: " << key->count() << "\n"
-                 << "isRepeat: "<< key->isAutoRepeat() << "\n";
+//        qDebug() << "type: " << event->type() << "\n"
+//                 << "text: " << key->text() << "\n"
+//                 << "count: " << key->count() << "\n"
+//                 << "isRepeat: "<< key->isAutoRepeat() << "\n";
 
         if (key->isAutoRepeat()) {
             switch (key->key()) {
@@ -449,4 +450,11 @@ int MainWindow::getRealSpeed(int speed, int maxSpeed){
 void MainWindow::on_acceptButton_clicked()
 {
     posController->startTimerTask(ui->elbowAngle->text().toInt());
+}
+
+void MainWindow::handleVideoFrame(char *data, int length)
+{
+    VideoFramePacket *p = (VideoFramePacket*) data;
+
+    delete p;
 }

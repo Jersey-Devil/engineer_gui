@@ -22,6 +22,7 @@ Robot::Robot():QObject()
 
     //handle client's got telemtry from robot
     connect(this, SIGNAL(telemetryChanged(char*)),positionController, SLOT(handleTelemetry(char*)));
+
 }
 
 //move robot's platform in direct way

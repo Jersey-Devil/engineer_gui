@@ -120,6 +120,7 @@ signals:
      * The slot from MainWindow handles it and shows the info
      */
     void telemetryChanged(char *data);
+    void videoFrameSended(char *data, int length);
 
 
 public:

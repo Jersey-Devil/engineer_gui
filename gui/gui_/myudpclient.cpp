@@ -48,36 +48,34 @@ void UDPClient::listenRobot(){
     if(!isConntected){
         isConntected = true;
         emit controller->connectedToRobot();
-
     }
 
     QByteArray baDatagram;
     do {
-
         baDatagram.resize(m_pudp->pendingDatagramSize());
         m_pudp->readDatagram(baDatagram.data(),baDatagram.size());
-
-    }while(m_pudp->hasPendingDatagrams());
-    QDataStream in(&baDatagram, QIODevice::ReadOnly);
-
-    do {
-        //275 is telemetry packet weight in bytes
-        //packets from cameras weight is bigger
-        char* buffer = new char[275];
-        in.readRawData(buffer,275);
-
+        char* buffer = new char[baDatagram.size()];
+//        memcpy(buffer, baDatagram.data(), baDatagram.length());
+        qDebug() << "data: " << baDatagram.toHex();
+//        in.readRawData(buffer,baDatagram.size());
         //first byte is FRAME_TYPE_ID
         //if it is 2, then it is TelemetryPacket
-        if(buffer[0]==2){
+        //275 is telemetry packet weight in bytes
+        //packets from cameras weight is bigger
+        switch (buffer[0]) {
+        case 2:
             emit controller->robot->telemetryChanged(buffer);
-            return;
-        }else{
-            //remove unnecessary
+            break;
+        case 4:
+            if (buffer[0] == 0xFF && buffer[1] == 0xD8) { // check jpeg marker
+                emit controller->robot->videoFrameSended(buffer, baDatagram.length());
+                break;
+            } //else default case
+        default:
             delete[] buffer;
-            return;
         }
-    }while (!in.atEnd());
 
+    } while (m_pudp->hasPendingDatagrams());
 }
 
 
