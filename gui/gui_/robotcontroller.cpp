@@ -38,6 +38,8 @@ RobotController::RobotController(Robot *r):QObject()
 }
 
 RobotController::~RobotController(){
+    delete client;
+    delete clientThread;
     delete packet;
 }
 

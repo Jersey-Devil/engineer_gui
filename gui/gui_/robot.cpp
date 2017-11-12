@@ -136,6 +136,7 @@ Robot::~Robot(){
 
     delete controller;
     delete configuration;
+    delete positionController;
 }
 
 //set client to connect to robot

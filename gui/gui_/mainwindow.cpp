@@ -8,7 +8,7 @@
 #include <QProgressDialog>
 #include <QThread>
 #include <QString>
-#include <QDebug>
+#include <QtDebug>
 using namespace std;
 
 /**
@@ -230,19 +230,45 @@ void MainWindow::on_settings_clicked()
  */
 void MainWindow::on_platformR_valueChanged(int value)
 {
-    if (value%10==0)
+    if (value%10==0) {
         if (value==50)
             robot->controller->stopPlatformR();
         else
             robot->moveR(getRealSpeed(value, robot->configuration->platformRotateSpeed));
+    }
 }
 
 //handles hot keys
 bool MainWindow::eventFilter(QObject *obj, QEvent *event){
-    if (event->type()==QEvent::KeyPress) {
+    if (event->type()==QEvent::KeyPress || event->type()==QEvent::KeyRelease) {
         QKeyEvent* key = static_cast<QKeyEvent*>(event);
+        qDebug() << "type: " << event->type() << "\n"
+                 << "text: " << key->text() << "\n"
+                 << "count: " << key->count() << "\n"
+                 << "isRepeat: "<< key->isAutoRepeat() << "\n";
+
+        if (key->isAutoRepeat()) {
+            switch (key->key()) {
+            case Qt::Key_W:
+                ui->platformF->setValue(ui->platformF->maximum());
+                break;
+            case Qt::Key_S:
+                ui->platformF->setValue(ui->platformF->minimum());
+                break;
+            case Qt::Key_A:
+                ui->platformR->setValue(ui->platformR->minimum());
+                break;
+            case Qt::Key_D:
+                ui->platformR->setValue(ui->platformR->maximum());
+                break;
+            default:
+                break;
+            }
+            event->accept();
+            return true;
+        }
         //PANIC button handler
-        if ( (key->key()==Qt::Key_Space)) {
+        if ((key->key()==Qt::Key_Space) || event->type() == QEvent::KeyRelease) {
             on_stopAll_clicked();
         } else {
             return QObject::eventFilter(obj, event);

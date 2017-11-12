@@ -102,7 +102,7 @@ private:
     void validateValues();
 
     //progress dialog to show, when connecting to robot
-    QProgressDialog *dialog;
+//    QProgressDialog *dialog;
     Ui::MainWindow *ui;
     bool isLight;
 
