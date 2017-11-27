@@ -4,6 +4,14 @@
 //necessary pragma which removes ZERO bytes
 //See Servosila documentation for more details
 #pragma pack(push,1)
+struct PacketConsts
+{
+    static const int TELEMETRY_PACKET_SIZE = 275;
+    static const int TELEMETRY_PACKET_ID = 2;
+    static const int REMOTE_CONTROL_PACKET_SIZE = 57;
+    static const int REMOTE_CONTROL_PACKET_ID = 1;
+    static const int VIDEO_FRAME_PACKET_ID = 4;
+};
 struct RemoteControlPacket{
     u_int8_t FRAME_TYPE_ID=1;
     int16_t AXIS[16];

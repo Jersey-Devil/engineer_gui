@@ -1,8 +1,7 @@
 #ifndef ROBOT_H
 #define ROBOT_H
-#include <robotconfiguration.h>
+#include "robotconfiguration.h"
 #include <QObject>
-
 //forward declaration of RobotController class
 class RobotController;
 
@@ -14,7 +13,7 @@ struct TelemetryPacket;
  * this class works with robotController to change packets
  * needed to abstract the changing packet action
  */
-class Robot: public QObject
+class Robot : public QObject
 {
     Q_OBJECT
 public:
@@ -108,7 +107,6 @@ public:
      */
     void connectToEngineer();
     void disconnectFromEngineer();
-
 
     //returns configuration object
     RobotConfiguration* getConfiguration();

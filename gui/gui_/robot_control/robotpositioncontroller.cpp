@@ -4,7 +4,7 @@
 #include <QStringBuilder>
 #include <QString>
 #include "myudpclient.h"
-#include "robotPackets.h"
+#include "robotpackets.h"
 #include "QDebug"
 #include "robot.h"
 #include <cstdlib>
@@ -25,7 +25,6 @@ void RobotPositionController::handleTelemetry(char *data){
 
     delete positionInfo;
     positionInfo = (TelemetryPacket*) data;
-
 }
 
 

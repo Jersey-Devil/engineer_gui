@@ -1,12 +1,9 @@
 #include "robotcontroller.h"
 #include <QObject>
-#include <QByteArray>
-#include <QStringBuilder>
-#include <QString>
 #include <cfloat>
 #include <algorithm>
 #include "myudpclient.h"
-#include "robotPackets.h"
+#include "robotpackets.h"
 #include "robot.h"
 
 /**
@@ -17,7 +14,7 @@
  */
 RobotController::RobotController(Robot *r):QObject()
 {
-    //robot = r;
+    robot = r;
 
     //client to handle
     client = new UDPClient(this);
@@ -26,9 +23,7 @@ RobotController::RobotController(Robot *r):QObject()
     //build packet, which is static
     //client will use it to send, and all other methods change it
     packet = getBasicPacket();
-
     //move client to another thread
-    client->moveFieldsToThread(clientThread);
     client->moveToThread(clientThread);
 
     //connect it to make it parallel
@@ -58,7 +53,12 @@ RobotController::~RobotController(){
 void RobotController::turnLight(){
     RemoteControlPacket *packet = getBasicPacket();
     packet->BUTTON[1] = 1;
-//    client->sendPacket(*packet);
+    //    client->sendPacket(*packet);
+}
+
+void RobotController::invokeF()
+{
+    callback();
 }
 
 //returns packet with zero values

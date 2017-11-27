@@ -2,15 +2,15 @@
 #include "myudpclient.h"
 #include "QTimer"
 #include "QDateTime"
-#include "QtNetwork/QUdpSocket"
-#include "QTextEdit"
 #include "QHostAddress"
 #include "QDataStream"
 #include "QByteArray"
 #include "QDebug"
+#include <QObject>
 #include "QThread"
 #include "QFile"
 #include "robotcontroller.h"
+#include "robotpackets.h"
 #include "QUdpSocket"
 
 /**
@@ -24,9 +24,10 @@ UDPClient::UDPClient(RobotController *controller):QObject()
 {
     //configure conection values
     m_pudp = new QUdpSocket(this);
-    robotAddress = new QHostAddress("127.0.0.1");
-//    robotAddress = new QHostAddress("10.42.0.1");
+//    robotAddress = new QHostAddress("127.0.0.1");
+    robotAddress = new QHostAddress("10.42.0.1");
     this->controller = controller;
+    robot = controller->robot;
     //timer for package sending
     timer = new QTimer();
 }
@@ -50,27 +51,26 @@ void UDPClient::listenRobot(){
         emit controller->connectedToRobot();
     }
 
-    QByteArray baDatagram;
     do {
-        baDatagram.resize(m_pudp->pendingDatagramSize());
-        m_pudp->readDatagram(baDatagram.data(),baDatagram.size());
-        char* buffer = new char[baDatagram.size()];
-//        memcpy(buffer, baDatagram.data(), baDatagram.length());
-        qDebug() << "data: " << baDatagram.toHex();
-//        in.readRawData(buffer,baDatagram.size());
+        int len = m_pudp->pendingDatagramSize();
+        char* buffer = new char[len];
+        m_pudp->readDatagram(buffer, 1000);
         //first byte is FRAME_TYPE_ID
         //if it is 2, then it is TelemetryPacket
         //275 is telemetry packet weight in bytes
         //packets from cameras weight is bigger
         switch (buffer[0]) {
-        case 2:
-            emit controller->robot->telemetryChanged(buffer);
+        case PacketConsts::REMOTE_CONTROL_PACKET_ID: //localhost testing
+            delete[] buffer;
             break;
-        case 4:
-            if (buffer[0] == 0xFF && buffer[1] == 0xD8) { // check jpeg marker
-                emit controller->robot->videoFrameSended(buffer, baDatagram.length());
-                break;
-            } //else default case
+        case PacketConsts::TELEMETRY_PACKET_ID:
+            if (len == 275) {
+                qDebug() << "emit telemetry  changed";
+                emit controller->robot->telemetryChanged(buffer);
+            }
+//            else qDebug() << "Wrong size of telemetry packet";
+            break;
+        case PacketConsts::VIDEO_FRAME_PACKET_ID:
         default:
             delete[] buffer;
         }
@@ -97,20 +97,19 @@ void UDPClient::sendPacket(RemoteControlPacket packet){
     QByteArray baDatagram;
     QDataStream out(&baDatagram,QIODevice::ReadWrite);
     out.setVersion(QDataStream::Qt_5_2);
-    out.writeRawData((char*)&packet,57);
+    out.writeRawData((char*)&packet,PacketConsts::REMOTE_CONTROL_PACKET_SIZE);
     m_pudp->writeDatagram(baDatagram,*robotAddress,ROBOT_PORT);
 
 }
 
-QTimer *UDPClient::getTimer()
-{
-    return timer;
-}
-
-void UDPClient::moveFieldsToThread(QThread *t)
+void UDPClient::moveToThread(QThread *t)
 {
     timer->moveToThread(t);
+    QObject::moveToThread(t);
 }
+
+
+
 
 //can be used for logs
 void UDPClient::writeInputToFile(char *data){

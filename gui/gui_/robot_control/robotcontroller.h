@@ -4,7 +4,8 @@
 #include <QByteArray>
 #include <QObject>
 #include <QTimer>
-#include "robotPackets.h"
+#include <functional>
+#include "robotpackets.h"
 #include "robot.h"
 
 //Forward declaration of UDPClient
@@ -20,6 +21,8 @@ class RobotController : public QObject
 {
     Q_OBJECT
 
+public:
+    std::function<void(void)> callback;
 
 public: Robot *robot;
 
@@ -35,6 +38,7 @@ signals:
     //method to disconnect Client
     void disconnectClient();
     void connectClient();
+    void test();
 
 public:
     /*
@@ -49,6 +53,7 @@ public:
 
     //This method turns light(sends once the packet
     void turnLight();
+    void invokeF();
 
     /*
      * Fabric method which returns new instance of packet

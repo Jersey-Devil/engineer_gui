@@ -3,7 +3,7 @@
 #include <QByteArray>
 #include <QObject>
 #include <QTimer>
-#include "robotPackets.h"
+#include "robotpackets.h"
 #include "robot.h"
 
 //1 degree of angle in Servosila's joints

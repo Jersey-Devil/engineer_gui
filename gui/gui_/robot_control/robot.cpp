@@ -1,6 +1,6 @@
 #include "robot.h"
 #include <robotcontroller.h>
-#include <robotPackets.h>
+#include <robotpackets.h>
 #include <QObject>
 #include "robotpositioncontroller.h"
 

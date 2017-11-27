@@ -4,9 +4,7 @@
 #include <QMainWindow>
 #include "robot.h"
 #include <QEvent>
-#include <vector>
 #include <QTableWidget>
-#include <QProgressDialog>
 #include "settingsdialog.h"
 #include "robotpositioncontroller.h"
 /*
@@ -82,7 +80,7 @@ private slots:
 
 public slots:
     //slot to control telemetry from client(robot) and show it
-    void setTelemetry(char *data);
+    void setTelemetry(char *buffer);
     //slot called when client connected to show button(disconnected)
     void connectedToRobotUI();
 

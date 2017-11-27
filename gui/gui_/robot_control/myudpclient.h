@@ -6,7 +6,8 @@
 #include <QTimer>
 #include <QDataStream>
 #include <QHostAddress>
-#include "robotPackets.h"
+#include "robotpackets.h"
+#include "robot.h"
 
 //standart port to work with robot, see Servosila documentation for more details
 #define ROBOT_PORT 10000
@@ -51,6 +52,7 @@ private:
 
     //controller needed to get packets
     RobotController *controller;
+    Robot* robot;
 
     //needed to send live packets specific time
     QTimer *timer;
@@ -64,12 +66,9 @@ public:
 
     //sends single packet, needed for Light
     void sendPacket(RemoteControlPacket packet);
-    QTimer* getTimer();
-    void moveFieldsToThread(QThread *t);
+    void moveToThread(QThread *t);
     ~UDPClient();
 
     //method that starts to connect to robot, entry method(!)
-
-
 };
 #endif // UDPCLIENT_H
