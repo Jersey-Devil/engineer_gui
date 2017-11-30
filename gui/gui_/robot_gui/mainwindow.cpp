@@ -43,12 +43,6 @@ MainWindow::MainWindow(QWidget *parent) :
 //    dialog = new QProgressDialog("Connecting to robot...", "Cancel", 0, 0);
 //    dialog->setWindowModality(Qt::WindowModal);
 
-    //telemetry values init
-    QTableWidget *widget = ui->telemetryView;
-    for(int i = 0; i < 10; ++i){
-        widget->setItem(i,0,new QTableWidgetItem());
-        widget->setItem(i,1,new QTableWidgetItem());
-    }
 
     //object to control robot via position and angles
     posController = robot->positionController;
@@ -61,29 +55,16 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(robot->controller,SIGNAL(connectedToRobot()),this,SLOT(connectedToRobotUI()));
 
     //init the values of telemtry view
-    QStringList list;
-    list<<"grippersR"           //1
-        <<"shoulder"             //2
-       <<      "elbow"           //3
-      << "neck"               //4
-     <<"grippersF"            //5
-    <<"waist"                //6
-    <<"platformRight"        //7
-    <<"platformLeft"         //8
-    <<"flippers"             //9
-    <<"Light";               //10
-    widget->setVerticalHeaderLabels(list);
 
     QStringList lst;
     lst << "Motor0" << "Motor1" << "Motor2" << "Motor3" << "Motor4" << "Motor5" << "Motor6"
-        << "Motor7" << "Motor8" << "Motor9";
-    list.clear();
-    list << "ID" << "State" << "Op. mode" << "Position" << "Speed" << "Amps" << "Status"
-         << "Pos. command" << "Sp. command" << "Amps command" << "Fault" << "Fault count";
+        << "Motor7" << "Motor8";
+    QStringList list;
+    list << "ID" << "State" << "Op. mode" << "Position" << "Speed" << "Amps";
     QTableWidget *md = ui->motorData;
-    md->setColumnCount(12);
+    md->setColumnCount(6);
     md->setShowGrid(true);
-    md->setRowCount(10);
+    md->setRowCount(9);
     md->setVerticalHeaderLabels(lst);
     md->setHorizontalHeaderLabels(list);
 }
@@ -401,39 +382,20 @@ void MainWindow::on_waistUpDown_valueChanged(int value)
 void MainWindow::setTelemetry(char* buffer){
     qDebug("set telemetry");
     TelemetryPacket *packet = (TelemetryPacket*) buffer;
-    QTableWidget *widget = ui->telemetryView;
-    for(int i = 0; i < 10; ++i){
-        QTableWidgetItem *itemSpeed = widget->item(i,0);
-        QTableWidgetItem *itemPosition = widget->item(i,1);
-        int robotSpeed = packet->M_DATA[i].SPEED;
-        int robotPosition = packet->M_DATA[i].POSITION;
-        itemSpeed->setText(QString::number(robotSpeed));
-        itemPosition->setText(QString::number(robotPosition));
-        ui->telemetryView->item(i,0)->setText(QString::number(packet->M_DATA[i].SPEED));
-        ui->telemetryView->item(i,1)->setText(QString::number(packet->M_DATA[i].POSITION));
-    }
-    widget = ui->motorData;
-    packet->M_DATA[0].DEVICE_ID = 1;
-    packet->M_DATA[0].DEVICE_STATE = 2;
-    packet->M_DATA[0].OPERATION_MODE = 3;
-    packet->M_DATA[0].POSITION = 4;
-    packet->M_DATA[0].SPEED = 5;
-    packet->M_DATA[0].AMPS = 6;
-    packet->M_DATA[0].STATUS_BITS = 7;
-    packet->M_DATA[0].POSITION_COMMAND = 8;
-    for (size_t i = 0; i < 10; ++i) {
+    QTableWidget *widget = ui->motorData;
+    for (size_t i = 0; i < 9; ++i) {
         widget->setItem(i,0, new QTableWidgetItem(QString::number(packet->M_DATA[i].DEVICE_ID)));
         widget->setItem(i,1, new QTableWidgetItem(QString::number(packet->M_DATA[i].DEVICE_STATE)));
         widget->setItem(i,2, new QTableWidgetItem(QString::number(packet->M_DATA[i].OPERATION_MODE)));
         widget->setItem(i,3, new QTableWidgetItem(QString::number(packet->M_DATA[i].POSITION)));
         widget->setItem(i,4, new QTableWidgetItem(QString::number(packet->M_DATA[i].SPEED)));
         widget->setItem(i,5, new QTableWidgetItem(QString::number(packet->M_DATA[i].AMPS)));
-        widget->setItem(i,6, new QTableWidgetItem(QString::number(packet->M_DATA[i].STATUS_BITS)));
-        widget->setItem(i,7, new QTableWidgetItem(QString::number(packet->M_DATA[i].POSITION_COMMAND)));
-        widget->setItem(i,8, new QTableWidgetItem(QString::number(packet->M_DATA[i].SPEED_COMMAND)));
-        widget->setItem(i,9, new QTableWidgetItem(QString::number(packet->M_DATA[i].AMPS_COMMAND)));
-        widget->setItem(i,10, new QTableWidgetItem(QString::number(packet->M_DATA[i].FAULT_DETECTED)));
-        widget->setItem(i,11, new QTableWidgetItem(QString::number(packet->M_DATA[i].FAULTS_COUNTER)));
+//        widget->setItem(i,6, new QTableWidgetItem(QString::number(packet->M_DATA[i].STATUS_BITS)));
+//        widget->setItem(i,7, new QTableWidgetItem(QString::number(packet->M_DATA[i].POSITION_COMMAND)));
+//        widget->setItem(i,8, new QTableWidgetItem(QString::number(packet->M_DATA[i].SPEED_COMMAND)));
+//        widget->setItem(i,9, new QTableWidgetItem(QString::number(packet->M_DATA[i].AMPS_COMMAND)));
+//        widget->setItem(i,10, new QTableWidgetItem(QString::number(packet->M_DATA[i].FAULT_DETECTED)));
+//        widget->setItem(i,11, new QTableWidgetItem(QString::number(packet->M_DATA[i].FAULTS_COUNTER)));
     }
 }
 

@@ -19,7 +19,7 @@ RobotController::RobotController(Robot *r):QObject()
     //client to handle
     client = new UDPClient(this);
     //its thread
-    clientThread = new QThread;
+    clientThread = new QThread();
     //build packet, which is static
     //client will use it to send, and all other methods change it
     packet = getBasicPacket();

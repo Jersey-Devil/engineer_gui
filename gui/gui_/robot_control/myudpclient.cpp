@@ -64,7 +64,7 @@ void UDPClient::listenRobot(){
             delete[] buffer;
             break;
         case PacketConsts::TELEMETRY_PACKET_ID:
-            if (len == 275) {
+            if (len == PacketConsts::TELEMETRY_PACKET_SIZE) {
                 qDebug() << "emit telemetry  changed";
                 emit controller->robot->telemetryChanged(buffer);
             }

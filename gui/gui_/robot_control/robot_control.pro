@@ -12,8 +12,9 @@ TARGET = robot_control
 TEMPLATE = lib
 
 DEFINES += ROBOT_CONTROL_LIBRARY
-CONFIG += c++14 static
-
+CONFIG += c++1z
+CONFIG -= static
+QMAKE_LFLAGS += -Wl,--no-allow-shlib-undefined,--no-undefined
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
