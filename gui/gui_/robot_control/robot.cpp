@@ -2,14 +2,31 @@
 #include <robotcontroller.h>
 #include <robotpackets.h>
 #include <QObject>
+#include <QThread>
+#include <QCoreApplication>
 #include "robotpositioncontroller.h"
 
+namespace QAppPriv
+{
+    static int argc = 1;
+    static char * argv[] = {"sharedlib.app", NULL};
+    static QCoreApplication * pApp = NULL;
+    static QThread * pThread = NULL;
+}
 /**
  * @brief Robot::Robot
  * Main object to control robot
  */
 Robot::Robot():QObject()
 {
+    if (QAppPriv::pThread == NULL)
+    {
+        // Separate thread for application thread
+        QAppPriv::pThread = new QThread();
+        // Direct connection is mandatory
+        connect(QAppPriv::pThread, SIGNAL(started()), this, SLOT(onExec()), Qt::DirectConnection);
+        QAppPriv::pThread->start();
+    }
     //controller based on speed values
     controller = new RobotController(this);
 
@@ -67,6 +84,17 @@ void Robot::closeGripper(){
 //return config
 RobotConfiguration* Robot::getConfiguration(){
     return configuration;
+}
+
+void Robot::onExec()
+{
+    if (QCoreApplication::instance() == NULL)
+    {
+        QAppPriv::pApp = new QCoreApplication(QAppPriv::argc, QAppPriv::argv);
+        QAppPriv::pApp->exec();
+        if (QAppPriv::pApp)
+            delete QAppPriv::pApp;
+    }
 }
 
 /**

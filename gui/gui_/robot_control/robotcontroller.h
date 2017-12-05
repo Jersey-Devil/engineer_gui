@@ -4,7 +4,6 @@
 #include <QByteArray>
 #include <QObject>
 #include <QTimer>
-#include <functional>
 #include "robotpackets.h"
 #include "robot.h"
 
@@ -21,8 +20,6 @@ class RobotController : public QObject
 {
     Q_OBJECT
 
-public:
-    std::function<void(void)> callback;
 
 public: Robot *robot;
 
@@ -38,7 +35,6 @@ signals:
     //method to disconnect Client
     void disconnectClient();
     void connectClient();
-    void test();
 
 public:
     /*

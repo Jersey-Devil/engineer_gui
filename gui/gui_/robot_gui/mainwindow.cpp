@@ -258,8 +258,6 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event){
             case Qt::Key_D:
                 ui->platformR->setValue(ui->platformR->maximum());
                 break;
-            case Qt::Key_F:
-                robot->controller->invokeF();
             default:
                 break;
             }

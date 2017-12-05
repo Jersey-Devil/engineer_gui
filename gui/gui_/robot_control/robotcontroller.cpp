@@ -56,10 +56,6 @@ void RobotController::turnLight(){
     //    client->sendPacket(*packet);
 }
 
-void RobotController::invokeF()
-{
-    callback();
-}
 
 //returns packet with zero values
 RemoteControlPacket* RobotController::getBasicPacket(){

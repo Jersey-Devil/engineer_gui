@@ -9,6 +9,7 @@ class RobotPositionController;
 //forward declaration of TelemetryPacket class
 struct TelemetryPacket;
 
+
 /*
  * this class works with robotController to change packets
  * needed to abstract the changing packet action
@@ -120,6 +121,8 @@ signals:
     void telemetryChanged(char *data);
     void videoFrameSended(char *data, int length);
 
+public slots:
+    void onExec();
 
 public:
     //Flag to handle connection
