@@ -24,8 +24,8 @@ UDPClient::UDPClient(RobotController *controller):QObject()
 {
     //configure conection values
     m_pudp = new QUdpSocket(this);
-    robotAddress = new QHostAddress("127.0.0.1");
-//    robotAddress = new QHostAddress("10.42.0.1");
+//    robotAddress = new QHostAddress("127.0.0.1");
+    robotAddress = new QHostAddress("10.42.0.1");
     this->controller = controller;
     robot = controller->robot;
     //timer for package sending
