@@ -31,7 +31,8 @@ SOURCES += \
         robot.cpp \
         robotconfiguration.cpp \
         robotcontroller.cpp \
-        robotpositioncontroller.cpp
+        robotpositioncontroller.cpp \
+    robotsi.cpp
 
 HEADERS += \
         myudpclient.h \
@@ -40,7 +41,8 @@ HEADERS += \
         robotcontroller.h \
         robotpositioncontroller.h \
         robot_control_global.h \ 
-        robotpackets.h
+        robotpackets.h \
+    robotsi.h
 
 unix {
     target.path = /usr/lib

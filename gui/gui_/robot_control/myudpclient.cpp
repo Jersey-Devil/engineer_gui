@@ -13,6 +13,12 @@
 #include "robotpackets.h"
 #include "QUdpSocket"
 
+#ifdef QT_NO_DEBUG
+#define ADDRESS "10.42.0.1"
+#else
+#define ADDRESS "127.0.0.1"
+#endif
+
 /**
  * @brief UDPClient::UDPClient
  * class to communicate with robot
@@ -24,8 +30,8 @@ UDPClient::UDPClient(RobotController *controller):QObject()
 {
     //configure conection values
     m_pudp = new QUdpSocket(this);
-//    robotAddress = new QHostAddress("127.0.0.1");
-    robotAddress = new QHostAddress("10.42.0.1");
+    robotAddress = new QHostAddress(ADDRESS);
+    qDebug() << "robot on address: " << ADDRESS;
     this->controller = controller;
     robot = controller->robot;
     //timer for package sending
@@ -65,7 +71,6 @@ void UDPClient::listenRobot(){
             break;
         case PacketConsts::TELEMETRY_PACKET_ID:
             if (len == PacketConsts::TELEMETRY_PACKET_SIZE) {
-                qDebug() << "emit telemetry  changed";
                 emit controller->robot->telemetryChanged(buffer);
             }
 //            else qDebug() << "Wrong size of telemetry packet";

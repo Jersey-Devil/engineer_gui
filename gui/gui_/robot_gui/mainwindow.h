@@ -118,7 +118,8 @@ private:
     //enables and disables all robot control items(sliders, inputs etc)
     //needed to work with slot connectedToRobotUI() method
     void setEnabledAllControls(bool);
-
+    QString getAngleById(int id, int position);
+    QString getSpeedMsById(int id, int speed);
 };
 
 

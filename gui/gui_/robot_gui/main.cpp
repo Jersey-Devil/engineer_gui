@@ -6,13 +6,19 @@
 #include <QBoxLayout>
 #include <QCheckBox>
 #include <mainwindow.h>
+#ifdef QT_DEBUG
+#define BUILD "Debug"
+#else
+#define BUILD "Release"
+#endif
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
     MainWindow window(new QWidget);
     window.show();
-    qDebug() << "c++ standart: " << __cplusplus;
-    qDebug() << "compiler ver: " << __GNUC__ << "." << __GNUC_MINOR__ << "." << __GNUC_PATCHLEVEL__;
+    qDebug() << "compiled with g++ ver." << __VERSION__
+             << "c++ std." << __cplusplus << "Qt ver." << QT_VERSION_STR << "on" << __TIMESTAMP__;
+    qDebug() << BUILD << "version";
     return app.exec();
 }

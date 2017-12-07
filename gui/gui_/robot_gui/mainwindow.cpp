@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "robot.h"
+#include "robotsi.h"
 #include <QKeyEvent>
 #include <QStandardItem>
 #include "robotpackets.h"
@@ -25,14 +26,15 @@ MainWindow::MainWindow(QWidget *parent) :
     form = new JointForm;
 
     //The object, using which the manipulations are made
-    robot = new Robot();
+//    robot = new Robot();
+    robot = new RobotSI();
     connect(robot, SIGNAL(videoFrameSended(char*, int)), this, SLOT(handleVideoFrame(char*, int)));
 
     //settings, like speed, see settingsdialog.h for details
     settings = new SettingsDialog(this,robot->configuration);
 
     //connect robot's signal when position is changed
-    //see updClient, where this signal is emitted
+    //see udpClient, where this signal is emitted
     connect(robot,SIGNAL(telemetryChanged(char*)),this,SLOT(setTelemetry(char*)));
 
     //needed to control hot keys
@@ -48,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
     posController = robot->positionController;
 
     //object to control robot via speed values
-    RobotController *c = robot->controller;
+//    RobotController *c = robot->controller;
 
     //called when first telemetry packets got, so hide dialog and change button
     //text from "Connect" to "Disconnect"
@@ -57,12 +59,12 @@ MainWindow::MainWindow(QWidget *parent) :
     //init the values of telemtry view
 
     QStringList lst;
-    lst << "Motor0" << "Motor1" << "Motor2" << "Motor3" << "Motor4" << "Motor5" << "Motor6"
-        << "Motor7" << "Motor8";
+    lst << "Gripper(fingers)" << "Gripper(rotation)" << "Elbow" << "Neck" << "Shoulder" << "Waist" << "Right drive"
+        << "Left drive" << "Flippers";
     QStringList list;
-    list << "ID" << "State" << "Op. mode" << "Position" << "Speed" << "Amps";
+    list << "ID" << "State" << "Op. mode" << "Position" << "Angle" << "Speed" << "Speed(m/s)" << "Amps";
     QTableWidget *md = ui->motorData;
-    md->setColumnCount(6);
+    md->setColumnCount(8);
     md->setShowGrid(true);
     md->setRowCount(9);
     md->setVerticalHeaderLabels(lst);
@@ -378,7 +380,6 @@ void MainWindow::on_waistUpDown_valueChanged(int value)
  * RobotPositionController class
  */
 void MainWindow::setTelemetry(char* buffer){
-    qDebug("set telemetry");
     TelemetryPacket *packet = (TelemetryPacket*) buffer;
     QTableWidget *widget = ui->motorData;
     for (size_t i = 0; i < 9; ++i) {
@@ -386,14 +387,49 @@ void MainWindow::setTelemetry(char* buffer){
         widget->setItem(i,1, new QTableWidgetItem(QString::number(packet->M_DATA[i].DEVICE_STATE)));
         widget->setItem(i,2, new QTableWidgetItem(QString::number(packet->M_DATA[i].OPERATION_MODE)));
         widget->setItem(i,3, new QTableWidgetItem(QString::number(packet->M_DATA[i].POSITION)));
-        widget->setItem(i,4, new QTableWidgetItem(QString::number(packet->M_DATA[i].SPEED)));
-        widget->setItem(i,5, new QTableWidgetItem(QString::number(packet->M_DATA[i].AMPS)));
+        widget->setItem(i,4, new QTableWidgetItem(getAngleById(packet->M_DATA[i].DEVICE_ID, packet->M_DATA[i].POSITION))); //angle
+        widget->setItem(i,5, new QTableWidgetItem(QString::number(packet->M_DATA[i].SPEED)));
+        widget->setItem(i,6, new QTableWidgetItem(getSpeedMsById(packet->M_DATA[i].DEVICE_ID, packet->M_DATA[i].SPEED))); //speed in m/s
+        widget->setItem(i,7, new QTableWidgetItem(QString::number(packet->M_DATA[i].AMPS)));
 //        widget->setItem(i,6, new QTableWidgetItem(QString::number(packet->M_DATA[i].STATUS_BITS)));
 //        widget->setItem(i,7, new QTableWidgetItem(QString::number(packet->M_DATA[i].POSITION_COMMAND)));
 //        widget->setItem(i,8, new QTableWidgetItem(QString::number(packet->M_DATA[i].SPEED_COMMAND)));
 //        widget->setItem(i,9, new QTableWidgetItem(QString::number(packet->M_DATA[i].AMPS_COMMAND)));
 //        widget->setItem(i,10, new QTableWidgetItem(QString::number(packet->M_DATA[i].FAULT_DETECTED)));
 //        widget->setItem(i,11, new QTableWidgetItem(QString::number(packet->M_DATA[i].FAULTS_COUNTER)));
+    }
+}
+
+QString MainWindow::getAngleById(int id, int position) {
+    switch (id) {
+    case 2: //gripper fingers
+    case 3: //gripper rotation
+        return QString::fromUtf8("-", 1);
+    case 4: //elbow
+        return QString::number(-216.9 + ((double)(position - 23500) / (63000 - 23500)) * (216.9));
+    case 5: //neck
+        return QString::number(188.8 - ((double)(position - 7900) / (42000 - 7900)) * 188.8);
+    case 6: //shoulder
+        return QString::number(-16.4 + ((double)(position - 40500) / (64400 - 40500)) * (114.2 + 16.4));
+    case 7: //waist
+        return QString::number(-214.2 + ((double)(position - 1000) / (65000 - 1000)) * (137.3 + 214.2));
+    case 8: //right drive
+    case 9: //left drive
+        return QString::fromUtf8("-", 1);
+    case 10: //flippers
+        return QString::number(230 - ((double)(position - 1070) / (64300 - 1070)) * (230 + 93));
+    default:
+        return QString::fromUtf8("-", 1);
+    }
+}
+
+QString MainWindow::getSpeedMsById(int id, int speed) {
+    switch (id) {
+    case 8:
+    case 9:
+        return QString::number(RobotSI::motorSpeedToMsForward(speed));
+    default:
+        return QString::fromUtf8("-", 1);
     }
 }
 
@@ -454,6 +490,6 @@ void MainWindow::on_acceptButton_clicked()
 void MainWindow::handleVideoFrame(char *data, int length)
 {
     VideoFramePacket *p = (VideoFramePacket*) data;
-
+    qDebug() << "received video frame with size " << length;
     delete p;
 }

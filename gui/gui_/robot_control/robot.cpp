@@ -9,9 +9,10 @@
 namespace QAppPriv
 {
     static int argc = 1;
-    static char * argv[] = {"sharedlib.app", NULL};
-    static QCoreApplication * pApp = NULL;
-    static QThread * pThread = NULL;
+    static char appname[] = "robot_control.so";
+    static char * argv[] = {appname, nullptr};
+    static QCoreApplication * pApp = nullptr;
+    static QThread * pThread = nullptr;
 }
 /**
  * @brief Robot::Robot
@@ -19,7 +20,7 @@ namespace QAppPriv
  */
 Robot::Robot():QObject()
 {
-    if (QAppPriv::pThread == NULL)
+    if (QAppPriv::pThread == nullptr)
     {
         // Separate thread for application thread
         QAppPriv::pThread = new QThread();
@@ -88,7 +89,7 @@ RobotConfiguration* Robot::getConfiguration(){
 
 void Robot::onExec()
 {
-    if (QCoreApplication::instance() == NULL)
+    if (QCoreApplication::instance() == nullptr)
     {
         QAppPriv::pApp = new QCoreApplication(QAppPriv::argc, QAppPriv::argv);
         QAppPriv::pApp->exec();

@@ -21,7 +21,7 @@ public:
 
     //the object to change packets, also creates Client, see description in robotcontroller.h
     RobotController *controller;
-    ~Robot();
+    virtual ~Robot();
     Robot();
     /*
      * moves robot platform directly(back or forward)
