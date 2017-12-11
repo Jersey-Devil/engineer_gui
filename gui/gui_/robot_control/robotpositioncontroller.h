@@ -1,9 +1,8 @@
 #ifndef ROBOTPOSITIONCONTROLLER_H
 #define ROBOTPOSITIONCONTROLLER_H
-#include <QByteArray>
 #include <QObject>
-#include <QTimer>
 #include "robotpackets.h"
+#include "robotcontroller.h"
 #include "robot.h"
 
 //1 degree of angle in Servosila's joints
@@ -13,31 +12,44 @@
  * @brief The RobotPositionController class
  * This class is used for robot manipulating using position values, like degrees of joints
  */
-class RobotPositionController : public QObject
+class RobotPositionController : public RobotController
 {
     Q_OBJECT
-
-int executePositionValue(int angle);
-public: Robot *robot;
-
-
 public:
+    Robot *robot;
+
     //info about current joints position
     TelemetryPacket *positionInfo;
 
-    void startTimerTask(int angle);
     RobotPositionController(Robot *robot);
     ~RobotPositionController();
+    int getAngleById(int id);
+    void setFlippersAngle(int angle);
+    int getFlippersAngle();
+    void setWaistAngle(int angle);
+    int getWaistAngle();
+    void setElbowAngle(int angle);
+    int getElbowAngle();
+    void setShoulderAngle(int angle);
+    int getShoulderAngle();
+    void setNeckAngle(int angle);
+    int getNeckAngle();
+    void evaluateTask();
+
 public slots:
     void handleTelemetry(char *data);
-    void rotateWaist();
-    void rotateElbow();
-private:
-    int angle;
-    int startTelemetry;
-    QTimer *timer;
-    bool deltaApproximateEquality(int first_telemtry, int current_telemetry, int angle_delta);
 
+private:
+    void updateAngles();
+    void setAngleByMotorId(int id, int position);
+    bool hasPositionData(int id);
+    int flippersAngle;
+    int waistAngle;
+    int elbowAngle;
+    int shoulderAngle;
+    int neckAngle;
+
+    bool hasTask;
 };
 
 #endif // ROBOTPOSITIONCONTROLLER_H

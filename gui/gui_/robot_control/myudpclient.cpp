@@ -98,13 +98,9 @@ UDPClient::~UDPClient(){
  * method to send packets
  * @param packet to send
  */
-void UDPClient::sendPacket(RemoteControlPacket packet){
-    QByteArray baDatagram;
-    QDataStream out(&baDatagram,QIODevice::ReadWrite);
-    out.setVersion(QDataStream::Qt_5_2);
-    out.writeRawData((char*)&packet,PacketConsts::REMOTE_CONTROL_PACKET_SIZE);
-    m_pudp->writeDatagram(baDatagram,*robotAddress,ROBOT_PORT);
-
+void UDPClient::sendPacket(RemoteControlPacket* packet){
+    m_pudp->writeDatagram((char*)packet, PacketConsts::REMOTE_CONTROL_PACKET_SIZE,
+                          *robotAddress,ROBOT_PORT);
 }
 
 void UDPClient::moveToThread(QThread *t)
@@ -152,14 +148,14 @@ void UDPClient::connectToRobot(){
  */
 void UDPClient::startTimerTask(){
     connect(timer, SIGNAL(timeout()), this, SLOT(sendLivePackets()));
-    timer->start(300);
+    timer->start(SEND_TIME_GAP);
 }
 
 //method which invoked by timer
 void UDPClient::sendLivePackets(){
 
     RemoteControlPacket *packet = controller->packet;
-    sendPacket(*packet);
+    sendPacket(packet);
 }
 
 //called when user presses "Disconnect" button

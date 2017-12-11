@@ -39,14 +39,13 @@ public slots:
     void connectToRobot();
     void disconnectFromRobot();
 
-
-
 private:
     //handles the connection state (Flag)
     bool isConntected = false;
     //socket to work with Robot, UDP
     QUdpSocket *m_pudp;
     QHostAddress *robotAddress;
+    constexpr static int SEND_TIME_GAP = 200;
     void writeInputToFile(char *data);
 
 
@@ -65,7 +64,7 @@ public:
     UDPClient(RobotController *controller);
 
     //sends single packet, needed for Light
-    void sendPacket(RemoteControlPacket packet);
+    void sendPacket(RemoteControlPacket* packet);
     void moveToThread(QThread *t);
     ~UDPClient();
 

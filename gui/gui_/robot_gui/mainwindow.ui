@@ -611,9 +611,9 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>20</y>
+         <y>12</y>
          <width>561</width>
-         <height>141</height>
+         <height>161</height>
         </rect>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout_7">
@@ -630,7 +630,7 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QLineEdit" name="neckLineEdit_2"/>
+           <widget class="QLineEdit" name="neckAngle"/>
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="elbowLabel_2">
@@ -650,7 +650,7 @@
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QLineEdit" name="shoulderLineEdit_2"/>
+           <widget class="QLineEdit" name="shoulderAngle"/>
           </item>
           <item row="3" column="0">
            <widget class="QLabel" name="waistLabel_2">
@@ -661,6 +661,16 @@
           </item>
           <item row="3" column="1">
            <widget class="QLineEdit" name="waistAngle"/>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Flippers</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLineEdit" name="flippersAngle"/>
           </item>
          </layout>
         </item>
@@ -678,26 +688,6 @@
           <property name="bottomMargin">
            <number>0</number>
           </property>
-          <item row="0" column="0">
-           <widget class="QLabel" name="platformForwardLabel_2">
-            <property name="text">
-             <string>platformF</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLineEdit" name="platformForwardLineEdit_2"/>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="platformRLabel_2">
-            <property name="text">
-             <string>PlatformR</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QLineEdit" name="platformRLineEdit_2"/>
-          </item>
          </layout>
         </item>
        </layout>

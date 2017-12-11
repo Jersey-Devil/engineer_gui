@@ -20,7 +20,7 @@ class Robot : public QObject
 public:
 
     //the object to change packets, also creates Client, see description in robotcontroller.h
-    RobotController *controller;
+//    RobotController *controller;
     virtual ~Robot();
     Robot();
     /*
@@ -120,16 +120,18 @@ signals:
      */
     void telemetryChanged(char *data);
     void videoFrameSended(char *data, int length);
+    void test();
 
 public slots:
     void onExec();
+    void connected();
 
 public:
     //Flag to handle connection
     bool isConnected = false;
     bool isConnecting = false;
     RobotConfiguration *configuration;
-    RobotPositionController *positionController;
+    RobotPositionController *controller;
 };
 
 #endif // ROBOT_H

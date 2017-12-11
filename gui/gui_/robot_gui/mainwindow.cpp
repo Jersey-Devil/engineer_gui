@@ -25,6 +25,9 @@ MainWindow::MainWindow(QWidget *parent) :
     //init form, used to control robot via windows
     form = new JointForm;
 
+//    RobotPositionController *c = new RobotPositionController(nullptr);
+
+
     //The object, using which the manipulations are made
 //    robot = new Robot();
     robot = new RobotSI();
@@ -47,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
     //object to control robot via position and angles
-    posController = robot->positionController;
+    controller = robot->controller;
 
     //object to control robot via speed values
 //    RobotController *c = robot->controller;
@@ -84,7 +87,6 @@ void MainWindow::validateValues(){
     form->waist = validateValue(ui->waistLineEdit->text());
     form->platformF = validateValue(ui->platformForwardLineEdit->text());
     form->platformR = validateValue(ui->platformRLineEdit->text());
-
 }
 
 /**
@@ -248,17 +250,41 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event){
 
         if (event->type()==QEvent::KeyPress) {
             switch (key->key()) {
-            case Qt::Key_W:
+            case Qt::Key_W: //forward
                 ui->platformF->setValue(ui->platformF->maximum());
                 break;
-            case Qt::Key_S:
+            case Qt::Key_S: //reverse
                 ui->platformF->setValue(ui->platformF->minimum());
                 break;
-            case Qt::Key_A:
+            case Qt::Key_A: //rotate left
                 ui->platformR->setValue(ui->platformR->minimum());
                 break;
-            case Qt::Key_D:
+            case Qt::Key_D: //rotate right
                 ui->platformR->setValue(ui->platformR->maximum());
+                break;
+            case Qt::Key_Q: //waist rotate left
+                ui->waistLeftRight->setValue(ui->waistLeftRight->minimum());
+                break;
+            case Qt::Key_E: //waist rotate right
+                ui->waistLeftRight->setValue(ui->waistLeftRight->maximum());
+                break;
+            case Qt::Key_F: //flippers up
+                ui->flipper->setValue(ui->flipper->maximum());
+                break;
+            case Qt::Key_R: //flippers down
+                ui->flipper->setValue(ui->flipper->minimum());
+                break;
+            case Qt::Key_G: //grippers close
+                ui->gripper->setValue(ui->gripper->minimum());
+                break;
+            case Qt::Key_T: //grippers open
+                ui->gripper->setValue(ui->gripper->maximum());
+                break;
+            case Qt::Key_Tab: //elbow up
+                ui->elbowSlider->setValue(ui->elbowSlider->maximum());
+                break;
+            case Qt::Key_Shift: //elbow down
+                ui->elbowSlider->setValue(ui->elbowSlider->minimum());
                 break;
             default:
                 break;
@@ -268,7 +294,36 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event){
         }
         //PANIC button handler
         if ((key->key()==Qt::Key_Space) || event->type() == QEvent::KeyRelease) {
-            on_stopAll_clicked();
+            if (event->type()==QEvent::KeyRelease) {
+                switch (key->key()) {
+                case Qt::Key_W:
+                case Qt::Key_S:
+                    ui->platformF->setValue(ui->platformF->maximum() / 2);
+                    break;
+                case Qt::Key_A:
+                case Qt::Key_D:
+                    ui->platformR->setValue(ui->platformR->maximum() / 2);
+                    break;
+                case Qt::Key_Q:
+                case Qt::Key_E:
+                    ui->waistLeftRight->setValue(ui->waistLeftRight->maximum() / 2);
+                    break;
+                case Qt::Key_F:
+                case Qt::Key_R:
+                    ui->flipper->setValue(0);
+                    break;
+                case Qt::Key_G:
+                case Qt::Key_T:
+                    ui->gripper->setValue(0);
+                    break;
+                case Qt::Key_Tab:
+                case Qt::Key_Shift:
+                    ui->elbowSlider->setValue(ui->elbowSlider->maximum() / 2);
+                    break;
+                default:
+                    break;
+                }
+            } else robot->stopAll();
         } else {
             return QObject::eventFilter(obj, event);
         }
@@ -484,7 +539,14 @@ int MainWindow::getRealSpeed(int speed, int maxSpeed){
 
 void MainWindow::on_acceptButton_clicked()
 {
-    posController->startTimerTask(ui->elbowAngle->text().toInt());
+    /*
+    controller->setNeckAngle(QString::number(ui->neckAngle->text()));
+    controller->setShoulderAngle(QString::number(ui->shoulderAngle->text()));
+    controller->setElbowAngle(QString::number(ui->elbowAngle->text()));
+    controller->setWaistAngle(QString::number(ui->waistAngle->text()));
+    controller->setFlippersAngle(QString::number(ui->flippersAngle->text()));
+    controller->evaluateTask();
+    */
 }
 
 void MainWindow::handleVideoFrame(char *data, int length)

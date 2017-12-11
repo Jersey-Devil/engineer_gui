@@ -29,18 +29,20 @@ Robot::Robot():QObject()
         QAppPriv::pThread->start();
     }
     //controller based on speed values
-    controller = new RobotController(this);
+//    controller = new RobotController(this);
+//    controller = nullptr;
 
     //robot's speed configurations
     //can be added in Settings window
     configuration = new RobotConfiguration(12000);
 
     //controller based on position values
-    positionController = new RobotPositionController(this);
+    controller = new RobotPositionController(this);
+//    positionController = nullptr;
 
-    //handle client's got telemtry from robot
-    connect(this, SIGNAL(telemetryChanged(char*)),positionController, SLOT(handleTelemetry(char*)));
 
+    //handle client's got telemetry from robot
+    connect(this, SIGNAL(telemetryChanged(char*)),controller, SLOT(handleTelemetry(char*)));
 }
 
 //move robot's platform in direct way
@@ -95,6 +97,14 @@ void Robot::onExec()
         QAppPriv::pApp->exec();
         if (QAppPriv::pApp)
             delete QAppPriv::pApp;
+    }
+}
+
+void Robot::connected()
+{
+    if (!this->isConnected && this->isConnecting) {
+        this->isConnected = true;
+        this->isConnecting = false;
     }
 }
 
@@ -166,21 +176,26 @@ Robot::~Robot(){
 
     delete controller;
     delete configuration;
-    delete positionController;
+//    if (positionController != nullptr) delete positionController;
+    //fixme position controller
 }
 
 //set client to connect to robot
 //see RobotController class for details
 void Robot::connectToEngineer(){
-    this->isConnecting = true;
-    emit controller->connectClient();
+    if (!this->isConnected && !this->isConnecting) {
+        this->isConnecting = true;
+        emit controller->connectClient();
+    }
 }
 
 void Robot::disconnectFromEngineer()
 {
-    this->isConnecting = false;
-    this->isConnected = false;
-    emit controller->disconnectClient();
+    if (this->isConnected || this->isConnecting) {
+        this->isConnecting = false;
+        this->isConnected = false;
+        emit controller->disconnectClient();
+    }
 }
 
 

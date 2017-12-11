@@ -29,7 +29,8 @@ RobotController::RobotController(Robot *r):QObject()
     //connect it to make it parallel
 //    connect(clientThread,SIGNAL(started()), client,SLOT(connectToRobot()));
     connect(this,SIGNAL(connectClient()), client,SLOT(connectToRobot()));
-    connect(this, SIGNAL(disconnectClient()), client, SLOT(disconnectFromRobot()));
+    connect(this,SIGNAL(disconnectClient()), client, SLOT(disconnectFromRobot()));
+    connect(this,SIGNAL(connectedToRobot()), robot, SLOT(connected()));
     clientThread->start();
 
 }
@@ -53,7 +54,7 @@ RobotController::~RobotController(){
 void RobotController::turnLight(){
     RemoteControlPacket *packet = getBasicPacket();
     packet->BUTTON[1] = 1;
-    //    client->sendPacket(*packet);
+    client->sendPacket(packet); // packet will be deleted in this method
 }
 
 

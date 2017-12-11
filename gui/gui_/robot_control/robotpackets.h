@@ -1,6 +1,6 @@
 #ifndef ROBOTPACKETS_H
 #define ROBOTPACKETS_H
-
+#include <cstdlib>
 //necessary pragma which removes ZERO bytes
 //See Servosila documentation for more details
 #pragma pack(push,1)

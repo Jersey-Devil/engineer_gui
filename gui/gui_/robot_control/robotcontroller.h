@@ -45,11 +45,10 @@ public:
     RemoteControlPacket *packet;
 
     RobotController(Robot *robot);
-    ~RobotController();
+    virtual ~RobotController();
 
     //This method turns light(sends once the packet
     void turnLight();
-    void invokeF();
 
     /*
      * Fabric method which returns new instance of packet

@@ -108,7 +108,7 @@ private:
 
     //main class to work with robot, see description in headers
     Robot *robot;
-    RobotPositionController *posController;
+    RobotPositionController *controller;
     //settings dialog to configure robot speed
     SettingsDialog *settings;
 
