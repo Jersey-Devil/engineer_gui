@@ -81,7 +81,8 @@ public:
     void stopGripper();
     void stopFlippers();
 
-
+private:
+    virtual void stopTask() = 0;
 
 
 };

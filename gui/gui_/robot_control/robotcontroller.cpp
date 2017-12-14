@@ -91,7 +91,6 @@ void RobotController::movePlatformRotate(int speed){
 
 void RobotController::setFlippersUp(){
     packet->AXIS[5] = 1;
-
 }
 
 

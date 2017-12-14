@@ -289,8 +289,8 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event){
             default:
                 break;
             }
-            event->accept();
-            return true;
+//            event->accept();
+            return QObject::eventFilter(obj, event);
         }
         //PANIC button handler
         if ((key->key()==Qt::Key_Space) || event->type() == QEvent::KeyRelease) {
@@ -327,7 +327,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event){
         } else {
             return QObject::eventFilter(obj, event);
         }
-        return true;
+        return QObject::eventFilter(obj, event);
     } else {
         return QObject::eventFilter(obj, event);
     }
@@ -539,14 +539,12 @@ int MainWindow::getRealSpeed(int speed, int maxSpeed){
 
 void MainWindow::on_acceptButton_clicked()
 {
-    /*
-    controller->setNeckAngle(QString::number(ui->neckAngle->text()));
-    controller->setShoulderAngle(QString::number(ui->shoulderAngle->text()));
-    controller->setElbowAngle(QString::number(ui->elbowAngle->text()));
-    controller->setWaistAngle(QString::number(ui->waistAngle->text()));
-    controller->setFlippersAngle(QString::number(ui->flippersAngle->text()));
-    controller->evaluateTask();
-    */
+    controller->setNeckAngle(ui->neckAngle->text().toInt());
+    controller->setShoulderAngle(ui->shoulderAngle->text().toInt());
+    controller->setElbowAngle(ui->elbowAngle->text().toInt());
+    controller->setWaistAngle(ui->waistAngle->text().toInt());
+    controller->setFlippersAngle(ui->flippersAngle->text().toInt());
+    controller->startTask();
 }
 
 void MainWindow::handleVideoFrame(char *data, int length)

@@ -23,7 +23,7 @@ public:
 
     RobotPositionController(Robot *robot);
     ~RobotPositionController();
-    int getAngleById(int id);
+    int getAngleById(int id, int position);
     void setFlippersAngle(int angle);
     int getFlippersAngle();
     void setWaistAngle(int angle);
@@ -34,13 +34,16 @@ public:
     int getShoulderAngle();
     void setNeckAngle(int angle);
     int getNeckAngle();
-    void evaluateTask();
+    void startTask();
+    virtual void stopTask() override;
 
 public slots:
     void handleTelemetry(char *data);
 
 private:
     void updateAngles();
+    void evaluateTask();
+    int getMotorPositionByAngle(int id);
     void setAngleByMotorId(int id, int position);
     bool hasPositionData(int id);
     int flippersAngle;

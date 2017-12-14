@@ -67,6 +67,7 @@ void Robot::turnLight(){
 
 //move robot's flippers, if direction -1, then down, 0-stop, 1-up
 void Robot::flippers(int direction){
+    controller->stopTask();
     switch (direction){
     case 1: controller->setFlippersUp(); break;
     case -1: controller->setFlippersDown(); break;
@@ -76,11 +77,13 @@ void Robot::flippers(int direction){
 
 //opens robot's gripper(actually they go back)
 void Robot::openGripper(){
+    controller->stopTask();
     controller->gripper(true);
 }
 
 //closes gripper, so it can hold objects
 void Robot::closeGripper(){
+    controller->stopTask();
     controller->gripper(false);
 }
 
@@ -117,12 +120,14 @@ void Robot::connected()
  * NOTE: you can't move only elbow
  */
 void Robot::turnElbowAndNeck(int speed){
+    controller->stopTask();
     controller->elbowNeck(-speed);
 }
 
 //turn only neck(head joint)
 //NOTE: dangerous move
 void Robot::turnNeck(int speed){
+    controller->stopTask();
     controller->neck(-speed);
 }
 
@@ -133,6 +138,7 @@ void Robot::turnNeck(int speed){
  * @param speed
  */
 void Robot::turnWaist(int speed){
+    controller->stopTask();
     controller->waist(speed);
 }
 
@@ -144,15 +150,15 @@ void Robot::turnWaist(int speed){
  * @param speed
  */
 void Robot::moveWaist(int speed){
+    controller->stopTask();
     controller->waistUpDown(speed);
 }
 
 //opens or closes gripper
 void Robot::gripper(int direction){
+    controller->stopTask();
     switch (direction) {
-    case 1: controller->gripper(true);
-
-        break;
+    case 1: controller->gripper(true); break;
     case -1: controller->gripper(false); break;
     default: controller->stopGripper();
         break;
@@ -162,6 +168,7 @@ void Robot::gripper(int direction){
 //stops all motors
 //used for PANIC button
 void Robot::stopAll(){
+    controller->stopTask();
     controller->stopElbowNeck();
     controller->stopNeck();
     controller->stopWaist();
