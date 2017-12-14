@@ -77,8 +77,10 @@ RemoteControlPacket* RobotController::getBasicPacket(){
 /*
  * sets the AXIS[1] speed to @speed, this moves platform
  */
+int limitSpeed(int);
+
 void RobotController::movePlatformDirect(int speed){
-    packet->AXIS[1] = speed;
+    packet->AXIS[1] = limitSpeed(speed);
 }
 
 
@@ -113,18 +115,18 @@ void RobotController::neck(int speed){
     packet->BUTTON[10] = 1;
 }
 void RobotController::elbowNeck(int speed){
-    packet->AXIS[4] = speed;
+    packet->AXIS[4] = limitSpeed(speed);
 
 }
 
 void RobotController::waist(int speed){
     packet->BUTTON[9] = 1;
-    packet->AXIS[0] = speed;
+    packet->AXIS[0] = limitSpeed(speed);
 }
 
 void RobotController::waistUpDown(int speed){
     packet->BUTTON[9] = 1;
-    packet->AXIS[1] = speed;
+    packet->AXIS[1] = limitSpeed(speed);
 }
 
 
@@ -161,6 +163,11 @@ void RobotController::stopGripper(){
     packet->BUTTON[3] = 0;
 }
 
+int limitSpeed(int speed) {
+    if (speed > 32767) speed = 32767;
+    if (speed < -32768) speed = -32768;
+    return speed;
+}
 /**
  * END SECTION
  * =============================================================================
