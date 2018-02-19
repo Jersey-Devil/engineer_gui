@@ -286,44 +286,48 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event){
             case Qt::Key_Shift: //elbow down
                 ui->elbowSlider->setValue(ui->elbowSlider->minimum());
                 break;
+            case Qt::Key_Space:
+                robot->stopAll();
+                event->accept();
+                return true;
+                break;
             default:
                 break;
             }
 //            event->accept();
             return QObject::eventFilter(obj, event);
+//            return true;
         }
         //PANIC button handler
-        if ((key->key()==Qt::Key_Space) || event->type() == QEvent::KeyRelease) {
-            if (event->type()==QEvent::KeyRelease) {
-                switch (key->key()) {
-                case Qt::Key_W:
-                case Qt::Key_S:
-                    ui->platformF->setValue(ui->platformF->maximum() / 2);
-                    break;
-                case Qt::Key_A:
-                case Qt::Key_D:
-                    ui->platformR->setValue(ui->platformR->maximum() / 2);
-                    break;
-                case Qt::Key_Q:
-                case Qt::Key_E:
-                    ui->waistLeftRight->setValue(ui->waistLeftRight->maximum() / 2);
-                    break;
-                case Qt::Key_F:
-                case Qt::Key_R:
-                    ui->flipper->setValue(0);
-                    break;
-                case Qt::Key_G:
-                case Qt::Key_T:
-                    ui->gripper->setValue(0);
-                    break;
-                case Qt::Key_Tab:
-                case Qt::Key_Shift:
-                    ui->elbowSlider->setValue(ui->elbowSlider->maximum() / 2);
-                    break;
-                default:
-                    break;
-                }
-            } else robot->stopAll();
+        if (event->type() == QEvent::KeyRelease) {
+            switch (key->key()) {
+            case Qt::Key_W:
+            case Qt::Key_S:
+                ui->platformF->setValue(ui->platformF->maximum() / 2);
+                break;
+            case Qt::Key_A:
+            case Qt::Key_D:
+                ui->platformR->setValue(ui->platformR->maximum() / 2);
+                break;
+            case Qt::Key_Q:
+            case Qt::Key_E:
+                ui->waistLeftRight->setValue(ui->waistLeftRight->maximum() / 2);
+                break;
+            case Qt::Key_F:
+            case Qt::Key_R:
+                ui->flipper->setValue(0);
+                break;
+            case Qt::Key_G:
+            case Qt::Key_T:
+                ui->gripper->setValue(0);
+                break;
+            case Qt::Key_Tab:
+            case Qt::Key_Shift:
+                ui->elbowSlider->setValue(ui->elbowSlider->maximum() / 2);
+                break;
+            default:
+                break;
+            }
         } else {
             return QObject::eventFilter(obj, event);
         }
@@ -331,7 +335,6 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event){
     } else {
         return QObject::eventFilter(obj, event);
     }
-    return false;
 }
 
 //calls robot to stop
@@ -539,12 +542,31 @@ int MainWindow::getRealSpeed(int speed, int maxSpeed){
 
 void MainWindow::on_acceptButton_clicked()
 {
-    controller->setNeckAngle(ui->neckAngle->text().toInt());
-    controller->setShoulderAngle(ui->shoulderAngle->text().toInt());
-    controller->setElbowAngle(ui->elbowAngle->text().toInt());
-    controller->setWaistAngle(ui->waistAngle->text().toInt());
-    controller->setFlippersAngle(ui->flippersAngle->text().toInt());
-    controller->startTask();
+    if (ui->neckAngle->text() != "" && controller->setNeckAngle(ui->neckAngle->text().toDouble()));
+    else {
+        controller->clearNeckAngle();
+        ui->neckAngle->setText("");
+    }
+    if (ui->shoulderAngle->text() != "" && controller->setShoulderAngle(ui->shoulderAngle->text().toDouble()));
+    else {
+        controller->clearShoulderAngle();
+        ui->shoulderAngle->setText("");
+    }
+    if (ui->elbowAngle->text() != "" && controller->setElbowAngle(ui->elbowAngle->text().toDouble()));
+    else {
+        controller->clearElbowAngle();
+        ui->elbowAngle->setText("");
+    }
+    if (ui->waistAngle->text() != "" && controller->setWaistAngle(ui->waistAngle->text().toDouble()));
+    else {
+        controller->clearWaistAngle();
+        ui->waistAngle->setText("");
+    }
+    if (ui->flippersAngle->text() != "" && controller->setFlippersAngle(ui->flippersAngle->text().toDouble()));
+    else {
+        controller->clearFlippersAngle();
+        ui->flippersAngle->setText("");
+    }
 }
 
 void MainWindow::handleVideoFrame(char *data, int length)

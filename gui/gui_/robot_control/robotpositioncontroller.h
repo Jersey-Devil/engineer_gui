@@ -23,36 +23,39 @@ public:
 
     RobotPositionController(Robot *robot);
     ~RobotPositionController();
-    int getAngleById(int id, int position);
-    void setFlippersAngle(int angle);
-    int getFlippersAngle();
-    void setWaistAngle(int angle);
-    int getWaistAngle();
-    void setElbowAngle(int angle);
-    int getElbowAngle();
-    void setShoulderAngle(int angle);
-    int getShoulderAngle();
-    void setNeckAngle(int angle);
-    int getNeckAngle();
-    void startTask();
+    double getAngleById(int id, int position);
+    bool setFlippersAngle(double angle);
+    void clearFlippersAngle();
+    double getFlippersAngle();
+    bool setWaistAngle(double angle);
+    void clearWaistAngle();
+    double getWaistAngle();
+    bool setElbowAngle(double angle);
+    void clearElbowAngle();
+    double getElbowAngle();
+    bool setShoulderAngle(double angle);
+    void clearShoulderAngle();
+    double getShoulderAngle();
+    bool setNeckAngle(double angle);
+    void clearNeckAngle();
+    double getNeckAngle();
     virtual void stopTask() override;
 
 public slots:
     void handleTelemetry(char *data);
 
 private:
-    void updateAngles();
-    void evaluateTask();
-    int getMotorPositionByAngle(int id);
+    int getMotorPositionById(int id);
     void setAngleByMotorId(int id, int position);
     bool hasPositionData(int id);
-    int flippersAngle;
-    int waistAngle;
-    int elbowAngle;
-    int shoulderAngle;
-    int neckAngle;
+    double flippersAngle; // 230.0 -> -93.0
+    double waistAngle; // -214.2 -> 137.3
+    double elbowAngle; // -216.9 -> 0.0
+    double shoulderAngle; // -16.4 -> 114.2
+    double neckAngle; // 188.8 -> 0.0
 
-    bool hasTask;
+    uint_fast8_t joints = 0;
+
 };
 
 #endif // ROBOTPOSITIONCONTROLLER_H
