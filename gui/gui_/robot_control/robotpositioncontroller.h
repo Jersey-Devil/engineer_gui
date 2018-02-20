@@ -38,6 +38,8 @@ public:
     bool setNeckAngle(double angle);
     void clearNeckAngle();
     double getNeckAngle();
+    int getMaxSpeed(int id);
+    double getAngleRange(int id);
     virtual void stopTask() override;
 
 public slots:

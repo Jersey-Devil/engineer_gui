@@ -6,8 +6,9 @@
 #include "robot.h"
 #include "robotsi.h"
 
-int comparePosition(int, int);
+int comparePosition(int, int, int id);
 int abs(int);
+int calcSpeed(int, int, int, RobotPositionController*);
 
 RobotPositionController::RobotPositionController(Robot *r): RobotController(r)
 {
@@ -142,6 +143,40 @@ double RobotPositionController::getNeckAngle()
     return this->neckAngle;
 }
 
+int RobotPositionController::getMaxSpeed(int id)
+{
+    switch (id) {
+    case 4:
+        return this->robot->configuration->elbowSpeed;
+    case 5:
+        return this->robot->configuration->neckSpeed;
+    case 6:
+        return this->robot->configuration->shouldersSpeed;
+    case 7:
+        return this->robot->configuration->waistSpeed;
+    case 10:
+    default:
+        return 0;
+    }
+}
+
+double RobotPositionController::getAngleRange(int id)
+{
+    switch (id) {
+    case 4:
+        return 216.9;
+    case 5:
+        return 188.8;
+    case 6:
+        return 114.2 + 16.4;
+    case 7:
+        return 214.2 + 137.3;
+    case 10:
+    default:
+        return 0;
+    }
+}
+
 void RobotPositionController::stopTask()
 {
     qDebug() << "manual position control";
@@ -163,64 +198,64 @@ void RobotPositionController::handleTelemetry(char *data){
             if ((joints & 1U) == 0) {
                 setAngleByMotorId(4, positionInfo->M_DATA[i].POSITION);
             } else {
-                int cmp = comparePosition(positionInfo->M_DATA[i].POSITION,
-                                          getMotorPositionById(positionInfo->M_DATA[i].DEVICE_ID));
-                speed = this->robot->configuration->elbowSpeed;
-                if (cmp == -1) this->elbowNeck(speed);
-                if (cmp == 0) {
+                speed = calcSpeed(positionInfo->M_DATA[i].POSITION,
+                                  getMotorPositionById(positionInfo->M_DATA[i].DEVICE_ID),
+                                  positionInfo->M_DATA[i].DEVICE_ID,
+                                  this);
+                if (speed == 0) {
                     this->stopElbowNeck();
                     joints &= ~(0b1U);
                     qDebug() << "elbow finished, joints = " << QString::number(joints,2);
                 }
-                if (cmp == 1) this->elbowNeck(-speed);
+                else this->elbowNeck(speed);
             }
             break;
         case 5: //neck 10
             if ((joints >> 1U & 1U) == 0) {
                 setAngleByMotorId(5, positionInfo->M_DATA[i].POSITION);
             } else {
-                int cmp = comparePosition(positionInfo->M_DATA[i].POSITION,
-                                          getMotorPositionById(positionInfo->M_DATA[i].DEVICE_ID));
-                speed = this->robot->configuration->neckSpeed;
-                if (cmp == -1) this->neck(-speed);
-                if (cmp == 0) {
+                speed = calcSpeed(positionInfo->M_DATA[i].POSITION,
+                                  getMotorPositionById(positionInfo->M_DATA[i].DEVICE_ID),
+                                  positionInfo->M_DATA[i].DEVICE_ID,
+                                  this);
+                if (speed == 0) {
                     this->stopNeck();
                     joints &= ~(0b10U);
                     qDebug() << "neck finished, joints = " << QString::number(joints,2);
                 }
-                if (cmp == 1) this->neck(speed);
+                else this->neck(-speed);
             }
             break;
         case 6: //shoulder 100
             if ((joints >> 2U & 1U) == 0) {
                 setAngleByMotorId(6, positionInfo->M_DATA[i].POSITION);
             } else {
-                int cmp = comparePosition(positionInfo->M_DATA[i].POSITION,
-                                          getMotorPositionById(positionInfo->M_DATA[i].DEVICE_ID));
-                speed = this->robot->configuration->shouldersSpeed;
-                if (cmp == -1) this->waistUpDown(speed);
-                if (cmp == 0) {
+                speed = calcSpeed(positionInfo->M_DATA[i].POSITION,
+                                  getMotorPositionById(positionInfo->M_DATA[i].DEVICE_ID),
+                                  positionInfo->M_DATA[i].DEVICE_ID,
+                                  this);
+                if (speed == 0) {
                     this->stopElbowNeck();
                     joints &= ~(0b100U);
                     qDebug() << "shoulder finished, joints = " << QString::number(joints,2);
                 }
-                if (cmp == 1) this->waistUpDown(-speed);
+                else this->waistUpDown(speed);
             }
             break;
         case 7: //waist 1000
             if ((joints >> 3U & 1U) == 0) {
                 setAngleByMotorId(7, positionInfo->M_DATA[i].POSITION);
             } else {
-                int cmp = comparePosition(positionInfo->M_DATA[i].POSITION,
-                                          getMotorPositionById(positionInfo->M_DATA[i].DEVICE_ID));
-                speed = this->robot->configuration->waistSpeed;
-                if (cmp == -1) this->waist(speed);
-                if (cmp == 0) {
+                speed = calcSpeed(positionInfo->M_DATA[i].POSITION,
+                                  getMotorPositionById(positionInfo->M_DATA[i].DEVICE_ID),
+                                  positionInfo->M_DATA[i].DEVICE_ID,
+                                  this);
+                if (speed == 0) {
                     this->stopWaist();
                     joints &= ~(0b1000U);
                     qDebug() << "waist finished, joints = " << QString::number(joints,2);
                 }
-                if (cmp == 1) this->waist(-speed);
+                else this->waist(speed);
             }
             break;
         case 10: //flippers 10000
@@ -228,7 +263,7 @@ void RobotPositionController::handleTelemetry(char *data){
                 setAngleByMotorId(10, positionInfo->M_DATA[i].POSITION);
             } else {
                 int cmp = comparePosition(positionInfo->M_DATA[i].POSITION,
-                                          getMotorPositionById(positionInfo->M_DATA[i].DEVICE_ID));
+                                          getMotorPositionById(positionInfo->M_DATA[i].DEVICE_ID), 10);
                 if (cmp == -1) this->setFlippersUp();
                 if (cmp == 0) {
                     this->stopFlippers();
@@ -242,6 +277,27 @@ void RobotPositionController::handleTelemetry(char *data){
             qDebug() << "wrong id while parsing positions";
             break;
         }
+    }
+}
+
+int calcSpeed(int current, int desired, int id, RobotPositionController* r) {
+    int max = r->getMaxSpeed(id);
+    double range = r->getAngleRange(id);
+    int speed = 0;
+    double b = 2*max / range;
+    double a = -b / 2*range;
+    int d = abs(current - desired);
+    if (d >= range / 3) speed = max; //param 3
+    else speed = a*d*d + b*d;
+    switch (comparePosition(current, desired, id)) {
+    case -1:
+        return speed;
+    case 0:
+        return 0;
+    case 1:
+        return -speed;
+    default:
+        return 0;
     }
 }
 
@@ -289,8 +345,26 @@ void RobotPositionController::evaluateTask()
     }
 }*/
 
-inline int comparePosition(int current, int desired) {
+inline int comparePosition(int current, int desired, int id) {
     int treshold = 800;
+    switch (id) {
+    case 4:
+        treshold = 800; //param 800
+        break;
+    case 5:
+        treshold = 800;
+        break;
+    case 6:
+        treshold = 800;
+        break;
+    case 7:
+        treshold = 800;
+        break;
+    case 10:
+    default:
+        treshold = 800;
+        break;
+    }
     if (abs(current - desired) < treshold) return 0;
     if (current > desired) return 1;
     return -1;
