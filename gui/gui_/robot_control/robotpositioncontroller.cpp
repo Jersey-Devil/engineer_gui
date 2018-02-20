@@ -11,7 +11,6 @@ int abs(int);
 
 RobotPositionController::RobotPositionController(Robot *r): RobotController(r)
 {
-    robot = r;
     joints = 0U;
     positionInfo = new TelemetryPacket;
 }
@@ -153,23 +152,25 @@ void RobotPositionController::stopTask()
 }
 
 void RobotPositionController::handleTelemetry(char *data){
-    qDebug() << "telemetry handled";
+//    qDebug() << "telemetry handled";
     delete positionInfo;
     positionInfo = (TelemetryPacket*) data;
     for (u_int8_t i = 0; i < positionInfo->NUMBER_OF_MOTORS; ++i) {
         if (!hasPositionData(positionInfo->M_DATA[i].DEVICE_ID)) continue;
-        int speed = 1000;
+        int speed = 10000;
         switch (positionInfo->M_DATA[i].DEVICE_ID) {
-        case 4: //elbow 1
+        case 4: //elbow 1 (should move neck too)
             if ((joints & 1U) == 0) {
                 setAngleByMotorId(4, positionInfo->M_DATA[i].POSITION);
             } else {
                 int cmp = comparePosition(positionInfo->M_DATA[i].POSITION,
                                           getMotorPositionById(positionInfo->M_DATA[i].DEVICE_ID));
+                speed = this->robot->configuration->elbowSpeed;
                 if (cmp == -1) this->elbowNeck(speed);
                 if (cmp == 0) {
                     this->stopElbowNeck();
                     joints &= ~(0b1U);
+                    qDebug() << "elbow finished, joints = " << QString::number(joints,2);
                 }
                 if (cmp == 1) this->elbowNeck(-speed);
             }
@@ -180,12 +181,14 @@ void RobotPositionController::handleTelemetry(char *data){
             } else {
                 int cmp = comparePosition(positionInfo->M_DATA[i].POSITION,
                                           getMotorPositionById(positionInfo->M_DATA[i].DEVICE_ID));
-                if (cmp == -1) this->neck(speed);
+                speed = this->robot->configuration->neckSpeed;
+                if (cmp == -1) this->neck(-speed);
                 if (cmp == 0) {
                     this->stopNeck();
                     joints &= ~(0b10U);
+                    qDebug() << "neck finished, joints = " << QString::number(joints,2);
                 }
-                if (cmp == 1) this->neck(-speed);
+                if (cmp == 1) this->neck(speed);
             }
             break;
         case 6: //shoulder 100
@@ -194,10 +197,12 @@ void RobotPositionController::handleTelemetry(char *data){
             } else {
                 int cmp = comparePosition(positionInfo->M_DATA[i].POSITION,
                                           getMotorPositionById(positionInfo->M_DATA[i].DEVICE_ID));
+                speed = this->robot->configuration->shouldersSpeed;
                 if (cmp == -1) this->waistUpDown(speed);
                 if (cmp == 0) {
-                    this->stopWaistUpDown();
+                    this->stopElbowNeck();
                     joints &= ~(0b100U);
+                    qDebug() << "shoulder finished, joints = " << QString::number(joints,2);
                 }
                 if (cmp == 1) this->waistUpDown(-speed);
             }
@@ -208,10 +213,12 @@ void RobotPositionController::handleTelemetry(char *data){
             } else {
                 int cmp = comparePosition(positionInfo->M_DATA[i].POSITION,
                                           getMotorPositionById(positionInfo->M_DATA[i].DEVICE_ID));
+                speed = this->robot->configuration->waistSpeed;
                 if (cmp == -1) this->waist(speed);
                 if (cmp == 0) {
                     this->stopWaist();
                     joints &= ~(0b1000U);
+                    qDebug() << "waist finished, joints = " << QString::number(joints,2);
                 }
                 if (cmp == 1) this->waist(-speed);
             }
@@ -226,6 +233,7 @@ void RobotPositionController::handleTelemetry(char *data){
                 if (cmp == 0) {
                     this->stopFlippers();
                     joints &= ~(0b10000U);
+                    qDebug() << "flippers finished, joints = " << QString::number(joints,2);
                 }
                 if (cmp == 1) this->setFlippersDown();
             }

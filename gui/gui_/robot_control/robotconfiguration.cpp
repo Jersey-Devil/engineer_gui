@@ -1,8 +1,6 @@
 #include "robotconfiguration.h"
 
-RobotConfiguration::RobotConfiguration()
-{
-}
+
 RobotConfiguration::RobotConfiguration(int platformForwardSpeed, int platformRotateSpeed, int shouldersSpeed, int neckSpeed, int elbowSpeed, int waistSpeed, bool light){
     this->platformForwardSpeed = platformForwardSpeed;
     this->platformRotateSpeed = platformRotateSpeed;
@@ -13,5 +11,10 @@ RobotConfiguration::RobotConfiguration(int platformForwardSpeed, int platformRot
     this->lightValue = light;
 }
 
+
+RobotConfiguration::RobotConfiguration(const char *) : RobotConfiguration()
+{
+
+}
 
 RobotConfiguration::~RobotConfiguration(){}

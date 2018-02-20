@@ -16,7 +16,6 @@ class RobotPositionController : public RobotController
 {
     Q_OBJECT
 public:
-    Robot *robot;
 
     //info about current joints position
     TelemetryPacket *positionInfo;

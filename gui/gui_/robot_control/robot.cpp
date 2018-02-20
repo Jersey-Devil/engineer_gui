@@ -34,7 +34,7 @@ Robot::Robot():QObject()
 
     //robot's speed configurations
     //can be added in Settings window
-    configuration = new RobotConfiguration(12000);
+    configuration = new RobotConfiguration("default");
 
     //controller based on position values
     controller = new RobotPositionController(this);

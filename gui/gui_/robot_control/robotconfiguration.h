@@ -10,7 +10,7 @@ class RobotConfiguration
 {
 
 public:
-    RobotConfiguration();
+    RobotConfiguration(const char*);
     ~RobotConfiguration();
     RobotConfiguration(int platformForwardSpeed=5000, int platformRotateSpeed = 5000, int shouldersSpeed=12000,
                        int neckSpeed=12000,int elbowSpeed=12000, int waistSpeed=8000, bool light = false);

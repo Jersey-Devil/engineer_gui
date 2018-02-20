@@ -10,6 +10,9 @@
 #include <QThread>
 #include <QString>
 #include <QtDebug>
+//#include <QMediaPlayer>
+//#include <QVideoWidget>
+
 using namespace std;
 
 /**
@@ -72,6 +75,18 @@ MainWindow::MainWindow(QWidget *parent) :
     md->setRowCount(9);
     md->setVerticalHeaderLabels(lst);
     md->setHorizontalHeaderLabels(list);
+
+/*    QMediaPlayer* player = new QMediaPlayer;
+    QVideoWidget* w = new QVideoWidget;
+    player->setVideoOutput(w);
+    QString s = "http://200.36.58.250/mjpg/video.mjpg?resolution=640x480";
+    QUrl u(s);
+    QNetworkRequest r(u);
+    const QMediaContent m(r);
+    player->setMedia(m);
+    w->setGeometry(100, 100, 300, 400);
+    w->show();
+    player->play();*/
 }
 
 
@@ -286,8 +301,15 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event){
             case Qt::Key_Shift: //elbow down
                 ui->elbowSlider->setValue(ui->elbowSlider->minimum());
                 break;
+            case Qt::Key_H: //shoulder down
+                ui->waistUpDown->setValue(ui->waistUpDown->minimum());
+                break;
+            case Qt::Key_Y: //shoulder up
+                ui->waistUpDown->setValue(ui->waistUpDown->maximum());
+                break;
             case Qt::Key_Space:
                 robot->stopAll();
+                setSlidersToStart();
                 event->accept();
                 return true;
                 break;
@@ -324,6 +346,10 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event){
             case Qt::Key_Tab:
             case Qt::Key_Shift:
                 ui->elbowSlider->setValue(ui->elbowSlider->maximum() / 2);
+                break;
+            case Qt::Key_H:
+            case Qt::Key_Y:
+                ui->waistUpDown->setValue(ui->waistUpDown->maximum() / 2);
                 break;
             default:
                 break;
