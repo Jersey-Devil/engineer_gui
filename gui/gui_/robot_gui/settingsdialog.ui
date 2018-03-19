@@ -26,7 +26,7 @@
     <enum>Qt::Horizontal</enum>
    </property>
    <property name="standardButtons">
-    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+    <set>QDialogButtonBox::Ok</set>
    </property>
   </widget>
   <widget class="QWidget" name="formLayoutWidget">
@@ -55,7 +55,7 @@
     <item row="0" column="1">
      <widget class="QLineEdit" name="platformForward_Edit">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -69,7 +69,7 @@
     <item row="2" column="1">
      <widget class="QLineEdit" name="platformRotate_Edit">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -140,7 +140,7 @@
     <item row="4" column="1">
      <widget class="QLineEdit" name="Neck_Edit">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -166,7 +166,7 @@
     <item row="0" column="1">
      <widget class="QLineEdit" name="Elbow_Edit">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -199,7 +199,7 @@
     <item row="2" column="1">
      <widget class="QLineEdit" name="waist_Edit">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -232,7 +232,7 @@
     <item row="4" column="1">
      <widget class="QLineEdit" name="Shoulder_Edit">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
      </widget>
     </item>

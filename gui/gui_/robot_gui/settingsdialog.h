@@ -38,6 +38,18 @@ private slots:
 
     void on_buttonBox_accepted();
 
+    void on_platformForward_Edit_editingFinished();
+
+    void on_platformRotate_Edit_editingFinished();
+
+    void on_Neck_Edit_editingFinished();
+
+    void on_Elbow_Edit_editingFinished();
+
+    void on_waist_Edit_editingFinished();
+
+    void on_Shoulder_Edit_editingFinished();
+
 private:
     //configuration, which is got from Robot class
     //after the settings are set and button "OK" is pressed

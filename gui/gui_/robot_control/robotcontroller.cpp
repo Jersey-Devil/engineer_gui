@@ -124,6 +124,7 @@ void RobotController::waist(int speed){
 }
 
 void RobotController::waistUpDown(int speed){
+    qDebug() << "waist updpwn invoked with " << speed;
     packet->BUTTON[9] = 1;
     packet->AXIS[1] = limitSpeed(speed);
 }

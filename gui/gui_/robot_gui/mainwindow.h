@@ -78,6 +78,8 @@ private slots:
 
     void handleVideoFrame(char* data, int length);
 
+    void on_stop_all_position_Button_clicked();
+
 public slots:
     //slot to control telemetry from client(robot) and show it
     void setTelemetry(char *buffer);
@@ -94,7 +96,7 @@ private:
     int getRealSpeed(int speed, int maxSpeed);
 
     //validates value from input window
-    int validateValue(QString value);
+    int validateValue(QString value, int max);
 
     JointForm *form;
 

@@ -42,11 +42,12 @@ Qt3DCore::QEntity *createScene()
 
     Qt3DCore::QEntity *robot = new Qt3DCore::QEntity(rootEntity);
     Qt3DRender::QMesh *robotMesh = new Qt3DRender::QMesh(rootEntity);
-    robotMesh->setSource(QUrl("file:///home/avispa/Workspace/Engineer_Gui/3d_model/stl/base.stl"));
+    robotMesh->setSource(QUrl("file:///home/avispa/Workspace/Engineer_Gui/3d_model/stl/vehicle-model.stl"));
     Qt3DCore::QTransform *robotTransform = new Qt3DCore::QTransform;
 
-    robotTransform->setScale3D(QVector3D(0.05, 0.05, 0.05));
-//    robotTransform->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), 0.0f));
+    robotTransform->setScale3D(QVector3D(35, 35, 35));
+    robotTransform->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), 45.0f));
+    robotTransform->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(0,1,0), 40.0f));
     robot->addComponent(robotMesh);
     robot->addComponent(material);
     robot->addComponent(robotTransform);
@@ -188,6 +189,7 @@ MainWindow::MainWindow(QWidget *parent) :
     qDebug() << qwidget->height();
     qDebug() << qwidget->width();
 //    view.show();
+    setEnabledAllControls(false);
 }
 
 
@@ -197,12 +199,18 @@ MainWindow::MainWindow(QWidget *parent) :
  * control robot via windows
  */
 void MainWindow::validateValues(){
-    form->elbow = validateValue(ui->elbowLineEdit->text());
-    form->neck = validateValue(ui->neckLineEdit->text());
-    form->shoulder = validateValue(ui->shoulderLineEdit->text());
-    form->waist = validateValue(ui->waistLineEdit->text());
-    form->platformF = validateValue(ui->platformForwardLineEdit->text());
-    form->platformR = validateValue(ui->platformRLineEdit->text());
+    form->elbow = validateValue(ui->elbowLineEdit->text(), robot->configuration->elbowSpeed);
+//    ui->elbowLineEdit->setText(QString::number(form->elbow));
+    form->neck = validateValue(ui->neckLineEdit->text(), robot->configuration->neckSpeed);
+//    ui->neckLineEdit->setText(QString::number(form->neck));
+    form->shoulder = validateValue(ui->shoulderLineEdit->text(), robot->configuration->shouldersSpeed);
+//    ui->shoulderLineEdit->setText(QString::number(form->shoulder));
+    form->waist = validateValue(ui->waistLineEdit->text(), robot->configuration->waistSpeed);
+//    ui->waistLineEdit->setText(QString::number(form->waist));
+    form->platformF = validateValue(ui->platformForwardLineEdit->text(), robot->configuration->platformForwardSpeed);
+//    ui->platformForwardLineEdit->setText(QString::number(form->platformF));
+    form->platformR = validateValue(ui->platformRLineEdit->text(), robot->configuration->platformRotateSpeed);
+//    ui->platformRLineEdit->setText(QString::number(form->platformR));
 }
 
 /**
@@ -210,10 +218,14 @@ void MainWindow::validateValues(){
  * @param value - value from input window
  * @return int value, which is speed
  */
-int MainWindow::validateValue(QString value){
-    if(value.isNull()|| value.isEmpty())
+int MainWindow::validateValue(QString value, int max){
+    qDebug() << value << " value";
+    if(value.isNull() || value.isEmpty())
         return 0;
-    return value.toInt();
+    int v = value.toInt();
+    if (v > max) return max;
+    if (v < -max) return -max;
+    return v;
 }
 
 
@@ -284,13 +296,43 @@ void MainWindow::on_flipper_valueChanged(int value)
     robot->flippers(value);
 }
 
+inline int getSliderSpeed(int speed, int max) {
+    if (max > 32767) max = 32767;
+    return 50 * speed / max + 50;
+}
+
 //handles window inputs
 //the main problem is AXIS and INPUT collision
 //see servosila documents
 void MainWindow::on_acceptForms_clicked()
 {
     validateValues();
-    if(form->platformF>0){
+    ui->neckSlider->setValue(getSliderSpeed(form->neck, robot->configuration->neckSpeed));
+    ui->neckLineEdit->setText(QString::number(form->neck));
+    if (form->neck != 0) robot->turnNeck(form->neck);
+    else robot->controller->stopNeck();
+    ui->elbowSlider->setValue(getSliderSpeed(form->elbow, robot->configuration->elbowSpeed));
+    ui->elbowLineEdit->setText(QString::number(form->elbow));
+    if (form->elbow != 0) robot->turnElbowAndNeck(form->elbow);
+    else robot->controller->stopElbowNeck();
+    ui->waistUpDown->setValue(getSliderSpeed(form->shoulder, robot->configuration->shouldersSpeed));
+    ui->shoulderLineEdit->setText(QString::number(form->shoulder));
+    if (form->shoulder != 0) robot->moveWaist(form->shoulder);
+    else robot->controller->stopWaistUpDown();
+    ui->waistLeftRight->setValue(getSliderSpeed(form->waist, robot->configuration->waistSpeed));
+    ui->waistLineEdit->setText(QString::number(form->waist));
+    if (form->waist != 0) robot->turnWaist(form->waist);
+    else robot->controller->stopWaist();
+    ui->platformF->setValue(getSliderSpeed(form->platformF, robot->configuration->platformForwardSpeed));
+    ui->platformForwardLineEdit->setText(QString::number(form->platformF));
+    if (form->platformF != 0) robot->moveD(form->platformF);
+    else robot->controller->stopPlatformD();
+    ui->platformR->setValue(getSliderSpeed(form->platformR, robot->configuration->platformRotateSpeed));
+    ui->platformRLineEdit->setText(QString::number(form->platformR));
+    if (form->platformR != 0) robot->moveR(form->platformR);
+    else robot->controller->stopPlatformR();
+
+    /*if(form->platformF>0){
         robot->moveD(form->platformF);
         if(form->platformR>0)
             robot->moveR(form->platformR);
@@ -309,7 +351,7 @@ void MainWindow::on_acceptForms_clicked()
     if(form->elbow>0)
         robot->turnElbowAndNeck(form->elbow);
     else
-        robot->turnNeck(form->neck);
+        robot->turnNeck(form->neck);*/
 }
 
 
@@ -321,7 +363,9 @@ void MainWindow::on_acceptForms_clicked()
  */
 void MainWindow::on_platformF_valueChanged(int value)
 {
-    if (value%10==0) {
+    ui->platformForwardLineEdit->setText(QString::number(getRealSpeed(value, robot->configuration->platformForwardSpeed)));
+//    if (value%10==0) {
+    if (true) {
         if (value==50)
             robot->controller->stopPlatformD();
         else
@@ -347,7 +391,9 @@ void MainWindow::on_settings_clicked()
  */
 void MainWindow::on_platformR_valueChanged(int value)
 {
-    if (value%10==0) {
+    ui->platformRLineEdit->setText(QString::number(getRealSpeed(value, robot->configuration->platformRotateSpeed)));
+//    if (value%10==0) {
+    if (true) {
         if (value==50)
             robot->controller->stopPlatformR();
         else
@@ -408,6 +454,12 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event){
             case Qt::Key_Y: //shoulder up
                 ui->waistUpDown->setValue(ui->waistUpDown->maximum());
                 break;
+            case Qt::Key_K: //neck down
+                ui->neckSlider->setValue(ui->neckSlider->minimum());
+                break;
+            case Qt::Key_I: //neck up
+                ui->neckSlider->setValue(ui->neckSlider->maximum());
+                break;
             case Qt::Key_Space:
                 robot->stopAll();
                 setSlidersToStart();
@@ -452,6 +504,9 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event){
             case Qt::Key_Y:
                 ui->waistUpDown->setValue(ui->waistUpDown->maximum() / 2);
                 break;
+            case Qt::Key_I:
+            case Qt::Key_K:
+                ui->neckSlider->setValue(ui->neckSlider->maximum() / 2);
             default:
                 break;
             }
@@ -508,7 +563,9 @@ void MainWindow::setInputToZero(){
  */
 void MainWindow::on_waistLeftRight_valueChanged(int value)
 {
-    if (value%10==0){
+    ui->waistLineEdit->setText(QString::number(getRealSpeed(value, robot->configuration->waistSpeed)));
+//    if (value%10==0){
+    if (true) {
         if (value==50)
             robot->controller->stopWaist();
         else
@@ -519,7 +576,9 @@ void MainWindow::on_waistLeftRight_valueChanged(int value)
 //elbow and neck joints move
 void MainWindow::on_elbowSlider_valueChanged(int value)
 {
-    if (value%10==0){
+    ui->elbowLineEdit->setText(QString::number(getRealSpeed(value, robot->configuration->elbowSpeed)));
+//    if (value%10==0){
+    if (true) {
         if (value==50)
             robot->controller->stopElbowNeck();
         else
@@ -529,7 +588,9 @@ void MainWindow::on_elbowSlider_valueChanged(int value)
 
 void MainWindow::on_neckSlider_valueChanged(int value)
 {
-    if (value%10==0){
+//    if (value%10==0){
+    ui->neckLineEdit->setText(QString::number(getRealSpeed(value, robot->configuration->neckSpeed)));
+    if (true) {
         if (value==50)
             robot->controller->stopNeck();
         else
@@ -540,7 +601,9 @@ void MainWindow::on_neckSlider_valueChanged(int value)
 //also known as shoulder
 void MainWindow::on_waistUpDown_valueChanged(int value)
 {
-    if(value%10==0){
+    ui->shoulderLineEdit->setText(QString::number(getRealSpeed(value, robot->configuration->shouldersSpeed)));
+//    if(value%10==0){
+    if (true) {
         if (value==50)
             robot->controller->stopWaistUpDown();
         else
@@ -650,6 +713,17 @@ void MainWindow::setEnabledAllControls(bool v){
     ui->waistLineEdit->setEnabled(v);
     ui->platformForwardLineEdit->setEnabled(v);
     ui->platformRLineEdit->setEnabled(v);
+    ui->elbowAngle->setEnabled(v);
+    ui->neckAngle->setEnabled(v);
+    ui->shoulderAngle->setEnabled(v);
+    ui->waistAngle->setEnabled(v);
+    ui->flippersAngle->setEnabled(v);
+
+    ui->acceptButton->setEnabled(v);
+    ui->stopAll->setEnabled(v);
+    ui->stop_all_position_Button->setEnabled(v);
+    ui->acceptForms->setEnabled(v);
+    ui->lightToggle->setEnabled(v);
 }
 
 /**
@@ -662,6 +736,7 @@ void MainWindow::setEnabledAllControls(bool v){
  * @return the robot kind speed (max range is from -32000 to 32000)
  */
 int MainWindow::getRealSpeed(int speed, int maxSpeed){
+    if (maxSpeed > 32767) maxSpeed = 32767;
     int realSpeed = 0;
     realSpeed = (speed-50)*(maxSpeed/50);
     return realSpeed;
@@ -701,4 +776,15 @@ void MainWindow::handleVideoFrame(char *data, int length)
     VideoFramePacket *p = (VideoFramePacket*) data;
     qDebug() << "received video frame with size " << length;
     delete p;
+}
+
+
+void MainWindow::on_stop_all_position_Button_clicked()
+{
+    robot->stopAll();
+    ui->elbowAngle->setText("");
+    ui->neckAngle->setText("");
+    ui->shoulderAngle->setText("");
+    ui->waistAngle->setText("");
+    ui->flippersAngle->setText("");
 }

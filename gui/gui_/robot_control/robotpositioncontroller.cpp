@@ -243,7 +243,10 @@ void RobotPositionController::handleTelemetry(char *data){
                     joints &= ~(0b100U);
                     qDebug() << "shoulder finished, joints = " << QString::number(joints,2);
                 }
-                else this->waistUpDown(speed);
+                else {
+                    this->waistUpDown(speed);
+                    qDebug() << "shoulder speed "  << speed;
+                }
             }
             break;
         case 7: //waist 1000
@@ -353,20 +356,20 @@ inline int comparePosition(int current, int desired, int id) {
     int treshold = 800;
     switch (id) {
     case 4: //elbow
-        treshold = 800; //param
+        treshold = 200; //very bad precision
         break;
     case 5: //neck
-        treshold = 300;
+        treshold = 200;
         break;
     case 6: //shoulder
-        treshold = 800;
+        treshold = 200;
         break;
     case 7: //waist
-        treshold = 800;
+        treshold = 200;
         break;
     case 10:
     default:
-        treshold = 800;
+        treshold = 600;
         break;
     }
     if (abs(current - desired) < treshold) return 0;

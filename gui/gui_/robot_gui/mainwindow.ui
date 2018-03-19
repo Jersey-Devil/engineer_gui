@@ -709,14 +709,27 @@
       <widget class="QPushButton" name="acceptButton">
        <property name="geometry">
         <rect>
-         <x>470</x>
+         <x>360</x>
          <y>170</y>
          <width>99</width>
          <height>27</height>
         </rect>
        </property>
        <property name="text">
-        <string>accept</string>
+        <string>Accept</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="stop_all_position_Button">
+       <property name="geometry">
+        <rect>
+         <x>470</x>
+         <y>170</y>
+         <width>89</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Stop all</string>
        </property>
       </widget>
      </widget>

@@ -1,5 +1,6 @@
 #include "settingsdialog.h"
 #include "ui_settingsdialog.h"
+#include <QDebug>
 
 /**
  * @brief SettingsDialog::SettingsDialog
@@ -92,4 +93,42 @@ void SettingsDialog::on_buttonBox_accepted()
     conf->shouldersSpeed = ui->Shoulder_Slider->value();
     conf->neckSpeed = ui->Neck_Slider->value();
     conf->waistSpeed = ui->Waist_Slider->value();
+}
+
+inline int getSliderValue(int value) {
+    int max = 17767;
+    value -= 5000;
+    if (value > max) value = max;
+    int i = (int) (100.0 * value / max);
+    return i;
+}
+
+void SettingsDialog::on_platformForward_Edit_editingFinished()
+{
+    ui->platformForward_Slider->setValue(ui->platformForward_Edit->text().toInt());
+}
+
+void SettingsDialog::on_platformRotate_Edit_editingFinished()
+{
+    ui->platformRotate_Slider->setValue(ui->platformRotate_Edit->text().toInt());
+}
+
+void SettingsDialog::on_Neck_Edit_editingFinished()
+{
+    ui->Neck_Slider->setValue(ui->Neck_Edit->text().toInt());
+}
+
+void SettingsDialog::on_Elbow_Edit_editingFinished()
+{
+    ui->Elbow_Slider->setValue(ui->Elbow_Edit->text().toInt());
+}
+
+void SettingsDialog::on_waist_Edit_editingFinished()
+{
+    ui->Waist_Slider->setValue(ui->waist_Edit->text().toInt());
+}
+
+void SettingsDialog::on_Shoulder_Edit_editingFinished()
+{
+    ui->Shoulder_Slider->setValue(ui->Shoulder_Edit->text().toInt());
 }
