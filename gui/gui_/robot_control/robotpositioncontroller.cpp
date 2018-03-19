@@ -147,13 +147,17 @@ int RobotPositionController::getMaxSpeed(int id)
 {
     switch (id) {
     case 4:
-        return this->robot->configuration->elbowSpeed;
+        return 12000;
+//        return this->robot->configuration->elbowSpeed;
     case 5:
-        return this->robot->configuration->neckSpeed;
+        return 12000;
+//        return this->robot->configuration->neckSpeed;
     case 6:
-        return this->robot->configuration->shouldersSpeed;
+        return 5000;
+//        return this->robot->configuration->shouldersSpeed;
     case 7:
-        return this->robot->configuration->waistSpeed;
+        return 8000;
+//        return this->robot->configuration->waistSpeed;
     case 10:
     default:
         return 0;
@@ -235,7 +239,7 @@ void RobotPositionController::handleTelemetry(char *data){
                                   positionInfo->M_DATA[i].DEVICE_ID,
                                   this);
                 if (speed == 0) {
-                    this->stopElbowNeck();
+                    this->stopWaistUpDown();
                     joints &= ~(0b100U);
                     qDebug() << "shoulder finished, joints = " << QString::number(joints,2);
                 }
@@ -287,7 +291,7 @@ int calcSpeed(int current, int desired, int id, RobotPositionController* r) {
     double b = 2*max / range;
     double a = -b / 2*range;
     int d = abs(current - desired);
-    if (d >= range / 3) speed = max; //param 3
+    if (d >= range / 2) speed = max; //param
     else speed = a*d*d + b*d;
     switch (comparePosition(current, desired, id)) {
     case -1:
@@ -348,16 +352,16 @@ void RobotPositionController::evaluateTask()
 inline int comparePosition(int current, int desired, int id) {
     int treshold = 800;
     switch (id) {
-    case 4:
-        treshold = 800; //param 800
+    case 4: //elbow
+        treshold = 800; //param
         break;
-    case 5:
+    case 5: //neck
+        treshold = 300;
+        break;
+    case 6: //shoulder
         treshold = 800;
         break;
-    case 6:
-        treshold = 800;
-        break;
-    case 7:
+    case 7: //waist
         treshold = 800;
         break;
     case 10:
