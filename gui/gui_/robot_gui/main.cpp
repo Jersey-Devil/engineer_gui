@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
 
     MainWindow window;
     window.show();
+    window.loadModel();
     qDebug() << "compiled with g++ ver." << __VERSION__
              << "c++ std." << __cplusplus << "Qt ver." << QT_VERSION_STR << "on" << __TIMESTAMP__;
     qDebug() << BUILD << "version";

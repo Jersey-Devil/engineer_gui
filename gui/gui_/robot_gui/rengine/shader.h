@@ -24,28 +24,31 @@ public:
 
   void set(const char *name, float value) {
     glUniform1f(glGetUniformLocation(mProgram, name), value);
-  };
+  }
+  void set(const char *name, size_t value) {
+      set(name, static_cast<int>(value));
+  }
   void set(const char *name, int value) {
     glUniform1i(glGetUniformLocation(mProgram, name), value);
-  };
+  }
   void set(const char *name, bool value) {
     glUniform1i(glGetUniformLocation(mProgram, name), value);
-  };
+  }
   void set(const char *name, glm::vec2 value) {
     glUniform2fv(glGetUniformLocation(mProgram, name), 1, glm::value_ptr(value));
-  };
+  }
   void set(const char *name, glm::vec3 value) {
     glUniform3fv(glGetUniformLocation(mProgram, name), 1, glm::value_ptr(value));
-  };
+  }
   void set(const char *name, glm::vec4 value) {
     glUniform4fv(glGetUniformLocation(mProgram, name), 1, glm::value_ptr(value));    
-  };
+  }
   void set(const char *name, glm::mat3 value) {
     glUniformMatrix3fv(glGetUniformLocation(mProgram, name), 1, GL_FALSE, glm::value_ptr(value));
-  };
+  }
   void set(const char *name, glm::mat4 value){
     glUniformMatrix4fv(glGetUniformLocation(mProgram, name), 1, GL_FALSE, glm::value_ptr(value));
-  };
+  }
 private:
   GLuint mProgram;
   

@@ -102,7 +102,7 @@ void Renderer::render()
 
   for (Mesh &mesh : mActiveScene->mainModel.mMeshes) {
 
-    for(int i = 0; i < mesh.mTextures.size(); i++) {
+    for(size_t i = 0; i < mesh.mTextures.size(); i++) {
       Texture texture = mesh.mTextures[i];
 
       const char *name;

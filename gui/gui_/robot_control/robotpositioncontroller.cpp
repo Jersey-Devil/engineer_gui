@@ -7,7 +7,7 @@
 #include "robotsi.h"
 
 int comparePosition(int, int, int id);
-int abs(int);
+int abs(int) noexcept;
 int calcSpeed(int, int, int, RobotPositionController*);
 
 RobotPositionController::RobotPositionController(Robot *r): RobotController(r)

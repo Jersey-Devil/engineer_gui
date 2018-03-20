@@ -11,7 +11,6 @@
 #include <QtDebug>
 
 //using namespace std;
-RenderWidget *renderWidget;
 
 /**
  * @brief MainWindow::MainWindow
@@ -129,6 +128,22 @@ MainWindow::~MainWindow()
     delete ui;
     delete robot;
     delete settings;
+}
+
+void MainWindow::loadModel()
+{
+    QString filename = "/home/avispa/Workspace/Engineer_Gui/3d_model/vehicle-model.dae";
+
+        Model m;
+        m.loadFromFilename(filename.toStdString());
+
+        qDebug() << m.mMeshes.size();
+        renderWidget->mScene.mainModel = m;
+        renderWidget->mRenderer.cleanUp();
+        renderWidget->mScene.mainCamera.reset();
+        renderWidget->initializeGL();
+        renderWidget->resizeGL(renderWidget->width(), renderWidget->height());
+        renderWidget->update();
 }
 
 //slot called to handle Light checkbox
@@ -674,20 +689,4 @@ void MainWindow::on_stop_all_position_Button_clicked()
     ui->shoulderAngle->setText("");
     ui->waistAngle->setText("");
     ui->flippersAngle->setText("");
-}
-
-void MainWindow::on_pushButton_clicked()
-{
-    QString filename = "/home/avispa/Workspace/Engineer_Gui/3d_model/flipper_roller.dae";
-
-        Model m;
-        m.loadFromFilename(filename.toStdString());
-
-        qDebug() << m.mMeshes.size();
-        renderWidget->mScene.mainModel = m;
-        renderWidget->mRenderer.cleanUp();
-        renderWidget->mScene.mainCamera.reset();
-        renderWidget->initializeGL();
-        renderWidget->resizeGL(renderWidget->width(), renderWidget->height());
-        renderWidget->update();
 }

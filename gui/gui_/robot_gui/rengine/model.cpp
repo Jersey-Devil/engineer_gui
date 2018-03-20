@@ -27,29 +27,29 @@ void Model::loadFromFilename(std::string filename)
 
   mCurrentFolder = filename.substr(0, filename.find_last_of("/"));
 
-  qDebug() << mMeshes.size();
+//  qDebug() << mMeshes.size();
   iterateNode(scene->mRootNode, scene);
-  qDebug() << mMeshes.size();
+//  qDebug() << mMeshes.size();
 }
 
 void Model::iterateNode(const aiNode *node, const aiScene *scene)
 {
 
 //  mMeshes.clear();
-  qDebug() << mMeshes.size();
-  for (int i = 0; i < node->mNumMeshes; i++) {
+//  qDebug() << mMeshes.size();
+  for (size_t i = 0; i < node->mNumMeshes; i++) {
     aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-    qDebug() << mMeshes.size();
-    qDebug() << "mesh size " << sizeof(Mesh);
-    qDebug() << "mesh* size " << sizeof(Mesh*);
+//    qDebug() << mMeshes.size();
+//    qDebug() << "mesh size " << sizeof(Mesh);
+//    qDebug() << "mesh* size " << sizeof(Mesh*);
     mMeshes.emplace_back(loadMesh(mesh, scene));
-    qDebug() << mMeshes.size();
+//    qDebug() << mMeshes.size();
   }
-  qDebug() << mMeshes.size();
-  for (int i = 0; i < node->mNumChildren; i++) {//recursion problem!
+//  qDebug() << mMeshes.size();
+  for (size_t i = 0; i < node->mNumChildren; i++) {//recursion problem!
     iterateNode(node->mChildren[i], scene);
   }
-  qDebug() << mMeshes.size();
+//  qDebug() << mMeshes.size();
 
 }
 
@@ -57,7 +57,7 @@ Mesh Model::loadMesh(const aiMesh *asMesh, const aiScene *scene)
 {
   std::vector<Vertex> vertices;
 
-  for (int i = 0; i < asMesh->mNumVertices; i++) {
+  for (size_t i = 0; i < asMesh->mNumVertices; i++) {
     Vertex vertex;
     glm::vec3 vect3;
     vect3.x = asMesh->mVertices[i].x;
@@ -96,22 +96,22 @@ Mesh Model::loadMesh(const aiMesh *asMesh, const aiScene *scene)
 
   std::vector<GLuint> indices;
 
-  for (int i = 0; i < asMesh->mNumFaces; i++) {
+  for (size_t i = 0; i < asMesh->mNumFaces; i++) {
     aiFace face = asMesh->mFaces[i];
-    for (int j = 0; j < face.mNumIndices; j++)
+    for (size_t j = 0; j < face.mNumIndices; j++)
       indices.push_back(face.mIndices[j]);
   }
 
   std::vector<Texture> textures;
 
-  if (asMesh->mMaterialIndex >= 0) {
+//  if (asMesh->mMaterialIndex >= 0) {
     aiMaterial *material = scene->mMaterials[asMesh->mMaterialIndex];
     std::vector<Texture> diffuseMaps = getTextures(material, DIFFUSE);
     textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
     std::vector<Texture> specularMaps = getTextures(material, SPECULAR);
     textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-  }
+//  }
   
   
 
@@ -137,7 +137,7 @@ std::vector<Texture> Model::getTextures(const aiMaterial *material, TextureType 
   }
 
   std::vector<Texture> textures;
-  for (int i = 0; i < material->GetTextureCount(type); i++) {
+  for (size_t i = 0; i < material->GetTextureCount(type); i++) {
     aiString aiStr;
     material->GetTexture(type, i, &aiStr);
 
