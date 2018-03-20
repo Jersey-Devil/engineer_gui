@@ -7,6 +7,7 @@
 #include <QTableWidget>
 #include "settingsdialog.h"
 #include "robotpositioncontroller.h"
+
 /*
  * structure needed to work with input windows
  */
@@ -79,6 +80,8 @@ private slots:
     void handleVideoFrame(char* data, int length);
 
     void on_stop_all_position_Button_clicked();
+
+    void on_pushButton_clicked();
 
 public slots:
     //slot to control telemetry from client(robot) and show it

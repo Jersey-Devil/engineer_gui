@@ -54,6 +54,13 @@
               </widget>
              </item>
              <item>
+              <widget class="QPushButton" name="pushButton">
+               <property name="text">
+                <string>PushButton</string>
+               </property>
+              </widget>
+             </item>
+             <item>
               <widget class="QPushButton" name="connectButton">
                <property name="text">
                 <string>Connect</string>
@@ -594,13 +601,13 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="robotWidget" native="true">
+     <widget class="RenderWidget" name="renderWidget">
       <property name="geometry">
        <rect>
         <x>590</x>
         <y>0</y>
-        <width>441</width>
-        <height>331</height>
+        <width>451</width>
+        <height>341</height>
        </rect>
       </property>
      </widget>
@@ -769,9 +776,14 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
+   <class>RenderWidget</class>
+   <extends>QOpenGLWidget</extends>
+   <header location="global">renderwidget.h</header>
+  </customwidget>
+  <customwidget>
    <class>MyQSlider</class>
    <extends>QSlider</extends>
-   <header location="global">myqslider.h</header>
+   <header>myqslider.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

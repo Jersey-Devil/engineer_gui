@@ -1,11 +1,8 @@
 #include "mainwindow.h"
 #include <QApplication>
-#include <QtGui>
-#include <QPushButton>
-#include <QLabel>
-#include <QBoxLayout>
-#include <QCheckBox>
 #include <mainwindow.h>
+#include <QDebug>
+#include <QSurfaceFormat>
 #ifdef QT_DEBUG
 #define BUILD "Debug"
 #else
@@ -15,7 +12,13 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    MainWindow window(new QWidget);
+    QSurfaceFormat format;
+        format.setDepthBufferSize(24);
+        format.setVersion(3, 3);
+        format.setProfile(QSurfaceFormat::CoreProfile);
+        QSurfaceFormat::setDefaultFormat(format);
+
+    MainWindow window;
     window.show();
     qDebug() << "compiled with g++ ver." << __VERSION__
              << "c++ std." << __cplusplus << "Qt ver." << QT_VERSION_STR << "on" << __TIMESTAMP__;

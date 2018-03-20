@@ -6,91 +6,12 @@
 #include <QStandardItem>
 #include "robotpackets.h"
 #include "robotcontroller.h"
-#include <QProgressDialog>
 #include <QThread>
 #include <QString>
 #include <QtDebug>
 
-#include <Qt3DCore/QEntity>
-  #include <Qt3DRender/QCamera>
-  #include <Qt3DRender/QCameraLens>
-  #include <Qt3DCore/QTransform>
-  #include <Qt3DCore/QAspectEngine>
-
-  #include <Qt3DInput/QInputAspect>
-
-  #include <Qt3DRender/QRenderAspect>
-#include <Qt3DRender/QMesh>
-  #include <Qt3DExtras/QForwardRenderer>
-  #include <Qt3DExtras/QPhongMaterial>
-  #include <Qt3DExtras/QCylinderMesh>
-  #include <Qt3DExtras/QSphereMesh>
-  #include <Qt3DExtras/QTorusMesh>
-#include <Qt3DExtras/Qt3DWindow>
-//#include <QMediaPlayer>
-//#include <QVideoWidget>
-
-using namespace std;
-
-Qt3DCore::QEntity *createScene()
-{
-    // Root entity
-    Qt3DCore::QEntity *rootEntity = new Qt3DCore::QEntity;
-
-    // Material
-    Qt3DRender::QMaterial *material = new Qt3DExtras::QPhongMaterial(rootEntity);
-
-    Qt3DCore::QEntity *robot = new Qt3DCore::QEntity(rootEntity);
-    Qt3DRender::QMesh *robotMesh = new Qt3DRender::QMesh(rootEntity);
-    robotMesh->setSource(QUrl("file:///home/avispa/Workspace/Engineer_Gui/3d_model/stl/vehicle-model.stl"));
-    Qt3DCore::QTransform *robotTransform = new Qt3DCore::QTransform;
-
-    robotTransform->setScale3D(QVector3D(35, 35, 35));
-    robotTransform->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(1,0,0), 45.0f));
-    robotTransform->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(0,1,0), 40.0f));
-    robot->addComponent(robotMesh);
-    robot->addComponent(material);
-    robot->addComponent(robotTransform);
-
-//    // Torus
-//    Qt3DCore::QEntity *torusEntity = new Qt3DCore::QEntity(rootEntity);
-//    Qt3DExtras::QTorusMesh *torusMesh = new Qt3DExtras::QTorusMesh;
-//    torusMesh->setRadius(5);
-//    torusMesh->setMinorRadius(1);
-//    torusMesh->setRings(100);
-//    torusMesh->setSlices(20);
-
-//    Qt3DCore::QTransform *torusTransform = new Qt3DCore::QTransform;
-//    torusTransform->setScale3D(QVector3D(1.5, 1, 0.5));
-//    torusTransform->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(1, 0, 0), 45.0f));
-
-//    torusEntity->addComponent(torusMesh);
-//    torusEntity->addComponent(torusTransform);
-//    torusEntity->addComponent(material);
-
-//    // Sphere
-//    Qt3DCore::QEntity *sphereEntity = new Qt3DCore::QEntity(rootEntity);
-//    Qt3DExtras::QSphereMesh *sphereMesh = new Qt3DExtras::QSphereMesh;
-//    sphereMesh->setRadius(3);
-
-//    Qt3DCore::QTransform *sphereTransform = new Qt3DCore::QTransform;
-
-//    QPropertyAnimation *sphereRotateTransformAnimation = new QPropertyAnimation(sphereTransform);
-//    sphereRotateTransformAnimation->setTargetObject(controller);
-//    sphereRotateTransformAnimation->setPropertyName("angle");
-//    sphereRotateTransformAnimation->setStartValue(QVariant::fromValue(0));
-//    sphereRotateTransformAnimation->setEndValue(QVariant::fromValue(360));
-//    sphereRotateTransformAnimation->setDuration(10000);
-//    sphereRotateTransformAnimation->setLoopCount(-1);
-//    sphereRotateTransformAnimation->start();
-
-//    sphereEntity->addComponent(sphereMesh);
-//    sphereEntity->addComponent(sphereTransform);
-//    sphereEntity->addComponent(material);
-
-    return rootEntity;
-}
-
+//using namespace std;
+RenderWidget *renderWidget;
 
 /**
  * @brief MainWindow::MainWindow
@@ -104,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     //init form, used to control robot via windows
     form = new JointForm;
-
+    renderWidget = ui->renderWidget;
 //    RobotPositionController *c = new RobotPositionController(nullptr);
 
 
@@ -153,43 +74,9 @@ MainWindow::MainWindow(QWidget *parent) :
     md->setVerticalHeaderLabels(lst);
     md->setHorizontalHeaderLabels(list);
 
-/*    QMediaPlayer* player = new QMediaPlayer;
-    QVideoWidget* w = new QVideoWidget;
-    player->setVideoOutput(w);
-    QString s = "http://200.36.58.250/mjpg/video.mjpg?resolution=640x480";
-    QUrl u(s);
-    QNetworkRequest r(u);
-    const QMediaContent m(r);
-    player->setMedia(m);
-    w->setGeometry(100, 100, 300, 400);
-    w->show();
-    player->play();*/
 
-    Qt3DCore::QEntity *scene = createScene();
-    Qt3DExtras::Qt3DWindow *view = new Qt3DExtras::Qt3DWindow();
-    QWidget* qwidget = QWidget::createWindowContainer(view, ui->robotWidget);
-    // Camera
-    Qt3DRender::QCamera *camera = view->camera();
-    camera->lens()->setPerspectiveProjection(45.0f, 16.0f/9.0f, 0.1f, 1000.0f);
-    camera->setPosition(QVector3D(-10.0f, 20.0f, 40.0f));
-    camera->setViewCenter(QVector3D(0, 0, 0));
-
-    // For camera controls
-//    Qt3DExtras::QOrbitCameraController *camController = new Qt3DExtras::QOrbitCameraController(scene);
-//    camController->setLinearSpeed( 50.0f );
-//    camController->setLookSpeed( 180.0f );
-//    camController->setCamera(camera);
-
-    view->setRootEntity(scene);
-    QSizePolicy sizePolicy;
-        sizePolicy.setHorizontalPolicy(QSizePolicy::Expanding);
-        sizePolicy.setVerticalPolicy(QSizePolicy::Expanding);
-    qwidget->setSizePolicy(sizePolicy);
-    qwidget->resize(450, 350);
-    qDebug() << qwidget->height();
-    qDebug() << qwidget->width();
-//    view.show();
     setEnabledAllControls(false);
+
 }
 
 
@@ -787,4 +674,20 @@ void MainWindow::on_stop_all_position_Button_clicked()
     ui->shoulderAngle->setText("");
     ui->waistAngle->setText("");
     ui->flippersAngle->setText("");
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    QString filename = "/home/avispa/Workspace/Engineer_Gui/3d_model/flipper_roller.dae";
+
+        Model m;
+        m.loadFromFilename(filename.toStdString());
+
+        qDebug() << m.mMeshes.size();
+        renderWidget->mScene.mainModel = m;
+        renderWidget->mRenderer.cleanUp();
+        renderWidget->mScene.mainCamera.reset();
+        renderWidget->initializeGL();
+        renderWidget->resizeGL(renderWidget->width(), renderWidget->height());
+        renderWidget->update();
 }

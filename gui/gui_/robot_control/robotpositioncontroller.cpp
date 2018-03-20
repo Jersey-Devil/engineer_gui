@@ -377,7 +377,7 @@ inline int comparePosition(int current, int desired, int id) {
     return -1;
 }
 
-inline int abs(int n) {
+inline int abs(int n) noexcept{
     if (n < 0) return -n;
     return n;
 }
