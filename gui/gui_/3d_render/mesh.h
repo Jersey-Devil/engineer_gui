@@ -2,7 +2,7 @@
 #define MESH_H
 
 #include <vector>
-#include "glm.hpp"
+#include "glm/glm.hpp"
 
 #include "texture.h"
 

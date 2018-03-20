@@ -2,7 +2,6 @@
 #include "mesh.h"
 #include <iostream>
 #include <vector>
-#include <QDebug>
 
 Model::Model()
 {

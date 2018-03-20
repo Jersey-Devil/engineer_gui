@@ -36,9 +36,9 @@ HEADERS += \
     scene.h \
     shader.h \
     stb_image.h \
-    texture.h \
-    glm.hpp \
-    type_ptr.hpp
+    texture.h
+
+INCLUDEPATH += ./glm
 
 LIBS += -lGL -lGLEW -lassimp
 unix {
