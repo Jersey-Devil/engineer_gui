@@ -1,7 +1,7 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include <glm/glm.hpp>
+#include "glm.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
 #include <iostream>

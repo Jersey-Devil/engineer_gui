@@ -1,6 +1,7 @@
 TEMPLATE = subdirs
 SUBDIRS = robot_control \
-    robot_gui
+    robot_gui \
+    3d_render
 robot_gui.depends = robot_control
 CONFIG += ordered c++1z
 QMAKE_LFLAGS += -Wl,--no-allow-shlib-undefined,--no-undefined
