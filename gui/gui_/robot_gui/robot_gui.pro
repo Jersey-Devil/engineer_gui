@@ -24,7 +24,8 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     myqslider.cpp \
     settingsdialog.cpp \
-    renderwidget.cpp
+    renderwidget.cpp \
+    rendersettings.cpp
 
 HEADERS  += mainwindow.h \
     myudpclient.h \
@@ -34,11 +35,15 @@ HEADERS  += mainwindow.h \
     robotpackets.h \
     robotpositioncontroller.h \
     myqslider.h \
-    settingsdialog.h
+    settingsdialog.h \
+    rendersettings.h \
+    renderwidget.h
 
 
 FORMS    += mainwindow.ui \
-    settingsdialog.ui
+    settingsdialog.ui \
+    rendersetting.ui \
+    rendersettings.ui
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../robot_control/release/ -lrobot_control
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../robot_control/debug/ -lrobot_control

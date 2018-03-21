@@ -83,6 +83,8 @@ private slots:
 
     void on_stop_all_position_Button_clicked();
 
+    void on_resetPositionButton_clicked();
+
 public slots:
     //slot to control telemetry from client(robot) and show it
     void setTelemetry(char *buffer);

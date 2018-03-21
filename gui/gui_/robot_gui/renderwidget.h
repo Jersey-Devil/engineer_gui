@@ -4,7 +4,7 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 
-#include "rengine/renderer.h"
+#include "renderer.h"
 
 #include <QOpenGLWidget>
 #include <QMouseEvent>

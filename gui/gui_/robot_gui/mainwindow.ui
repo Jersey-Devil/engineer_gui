@@ -613,6 +613,32 @@
        <enum>Qt::CustomContextMenu</enum>
       </property>
      </widget>
+     <widget class="QPushButton" name="resetPositionButton">
+      <property name="geometry">
+       <rect>
+        <x>610</x>
+        <y>350</y>
+        <width>111</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Reset position</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="settingsButton">
+      <property name="geometry">
+       <rect>
+        <x>730</x>
+        <y>350</y>
+        <width>121</width>
+        <height>25</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Render settings</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">

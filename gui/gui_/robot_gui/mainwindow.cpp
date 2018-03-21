@@ -9,7 +9,7 @@
 #include <QThread>
 #include <QString>
 #include <QtDebug>
-
+#include "model.h"
 //using namespace std;
 
 /**
@@ -689,4 +689,11 @@ void MainWindow::on_stop_all_position_Button_clicked()
     ui->shoulderAngle->setText("");
     ui->waistAngle->setText("");
     ui->flippersAngle->setText("");
+}
+
+void MainWindow::on_resetPositionButton_clicked()
+{
+    renderWidget->mScene.mainModel.resetModelMatrix();
+    renderWidget->mScene.mainCamera.reset();
+    renderWidget->update();
 }
