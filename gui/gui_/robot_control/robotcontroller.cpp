@@ -12,6 +12,7 @@
  *
  * @param r - the pointer to Robot class object
  */
+
 RobotController::RobotController(Robot *r):QObject()
 {
     robot = r;
@@ -119,6 +120,7 @@ void RobotController::elbowNeck(int speed){
 }
 
 void RobotController::waist(int speed){
+    qDebug() << "waist invoked with " << speed;
     packet->BUTTON[9] = 1;
     packet->AXIS[0] = limitSpeed(speed);
 }

@@ -37,6 +37,7 @@ UDPClient::UDPClient(RobotController *controller):QObject()
     robot = controller->robot;
     //timer for package sending
     timer = new QTimer();
+    connectionTimer = new QTimer;
 }
 
 
@@ -56,6 +57,9 @@ void UDPClient::listenRobot(){
     if(!isConntected){
         isConntected = true;
         emit controller->connectedToRobot();
+        if (QString(ADDRESS) != "127.0.0.1")
+            connect(connectionTimer, SIGNAL(timeout()), this->controller, SIGNAL(connectionDrop()));
+        connectionTimer->start(1500);
     }
 
     do {
@@ -72,9 +76,10 @@ void UDPClient::listenRobot(){
             break;
         case PacketConsts::TELEMETRY_PACKET_ID:
             if (len == PacketConsts::TELEMETRY_PACKET_SIZE) {
+                connectionTimer->start();
                 emit controller->robot->telemetryChanged(buffer);
             }
-//            else qDebug() << "Wrong size of telemetry packet";
+            else qDebug() << "Wrong size of telemetry packet";
             break;
         case PacketConsts::VIDEO_FRAME_PACKET_ID:
         default:
@@ -107,6 +112,7 @@ void UDPClient::sendPacket(RemoteControlPacket* packet){
 void UDPClient::moveToThread(QThread *t)
 {
     timer->moveToThread(t);
+    connectionTimer->moveToThread(t);
     QObject::moveToThread(t);
 }
 
@@ -164,10 +170,12 @@ void UDPClient::disconnectFromRobot(){
     m_pudp->disconnectFromHost();
     //stop timer
     timer->stop();
+    connectionTimer->stop();
     isConntected = false;
     //remove signals
     disconnect(m_pudp,SIGNAL(readyRead()),this,SLOT(listenRobot()));
     disconnect(m_pudp,SIGNAL(connected()),this,SLOT(startTimerTask()));
     disconnect(timer, SIGNAL(timeout()), this, SLOT(sendLivePackets()));
+    disconnect(connectionTimer, SIGNAL(timeout()), this->controller, SIGNAL(connectionDrop()));
 
 }

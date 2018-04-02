@@ -35,6 +35,7 @@ signals:
     //method to disconnect Client
     void disconnectClient();
     void connectClient();
+    void connectionDrop();
 
 public:
     /*

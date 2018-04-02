@@ -2,6 +2,7 @@
 #include <robotcontroller.h>
 #include <robotpackets.h>
 #include <QObject>
+#include <QDebug>
 #include <QThread>
 #include <QCoreApplication>
 #include "robotpositioncontroller.h"
@@ -139,6 +140,7 @@ void Robot::turnNeck(int speed){
  */
 void Robot::turnWaist(int speed){
     controller->stopTask();
+    qDebug() << "turned waist speed " << speed;
     controller->waist(speed);
 }
 

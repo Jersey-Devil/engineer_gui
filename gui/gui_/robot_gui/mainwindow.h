@@ -7,6 +7,7 @@
 #include <QTableWidget>
 #include "renderwidget.h"
 #include "settingsdialog.h"
+#include "rendersettings.h"
 #include "robotpositioncontroller.h"
 
 /*
@@ -85,6 +86,10 @@ private slots:
 
     void on_resetPositionButton_clicked();
 
+    void on_settingsButton_clicked();
+
+    void robotDisconnect();
+
 public slots:
     //slot to control telemetry from client(robot) and show it
     void setTelemetry(char *buffer);
@@ -118,6 +123,7 @@ private:
     RobotPositionController *controller;
     //settings dialog to configure robot speed
     SettingsDialog *settings;
+    RenderSettings* renderSettings;
     RenderWidget* renderWidget;
     int currentGripper = 0;
     int currentFlippers = 0;

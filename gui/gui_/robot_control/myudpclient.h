@@ -55,6 +55,7 @@ private:
 
     //needed to send live packets specific time
     QTimer *timer;
+    QTimer *connectionTimer;
 
 
 public:

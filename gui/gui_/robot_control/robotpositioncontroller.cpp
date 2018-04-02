@@ -34,8 +34,8 @@ double RobotPositionController::getAngleById(int id, int position)
     case 10: //flippers
         return (230 - ((double)(position - 1070) / (64300 - 1070)) * (230 + 93));
     default:
+        qDebug() << "wrong id in getAngleById";
         return 0;
-        //....
     }
 }
 
@@ -145,7 +145,7 @@ double RobotPositionController::getNeckAngle()
 
 int RobotPositionController::getMaxSpeed(int id)
 {
-    switch (id) {
+    switch (id) { //wtf with this shit???
     case 4:
         return 12000;
 //        return this->robot->configuration->elbowSpeed;
@@ -160,6 +160,7 @@ int RobotPositionController::getMaxSpeed(int id)
 //        return this->robot->configuration->waistSpeed;
     case 10:
     default:
+        qDebug() << "wrong id in getMaxSpeed";
         return 0;
     }
 }
@@ -177,28 +178,24 @@ double RobotPositionController::getAngleRange(int id)
         return 214.2 + 137.3;
     case 10:
     default:
+        qDebug() << "wrong id in getAngleRange";
         return 0;
     }
 }
 
 void RobotPositionController::stopTask()
 {
-    qDebug() << "manual position control";
-    if (joints != 0U) {
-        joints = 0U;
-        qDebug() << "task stoped";
-    }
+    if (joints != 0U) joints = 0U;
 }
 
 void RobotPositionController::handleTelemetry(char *data){
-//    qDebug() << "telemetry handled";
     delete positionInfo;
     positionInfo = (TelemetryPacket*) data;
     for (u_int8_t i = 0; i < positionInfo->NUMBER_OF_MOTORS; ++i) {
         if (!hasPositionData(positionInfo->M_DATA[i].DEVICE_ID)) continue;
         int speed = 10000;
         switch (positionInfo->M_DATA[i].DEVICE_ID) {
-        case 4: //elbow 1 (should move neck too)
+        case 4: //elbow 1
             if ((joints & 1U) == 0) {
                 setAngleByMotorId(4, positionInfo->M_DATA[i].POSITION);
             } else {
@@ -218,6 +215,7 @@ void RobotPositionController::handleTelemetry(char *data){
             if ((joints >> 1U & 1U) == 0) {
                 setAngleByMotorId(5, positionInfo->M_DATA[i].POSITION);
             } else {
+                if ((joints & 1U) == 1) break;
                 speed = calcSpeed(positionInfo->M_DATA[i].POSITION,
                                   getMotorPositionById(positionInfo->M_DATA[i].DEVICE_ID),
                                   positionInfo->M_DATA[i].DEVICE_ID,
@@ -286,16 +284,31 @@ void RobotPositionController::handleTelemetry(char *data){
         }
     }
 }
+int getMinSpeed(int id) {
+    switch (id) {
+    case 4:
+        return 8000;
+    case 5:
+        return 7000;
+    case 6:
+        return 7000;
+    case 7:
+        return 6500;
+    case 10:
+    default:
+        return 7000;
+    }
+}
 
 int calcSpeed(int current, int desired, int id, RobotPositionController* r) {
-    int max = r->getMaxSpeed(id);
-    double range = r->getAngleRange(id);
+    int range = r->getAngleRange(id) / 4; //param pam pam :)
     int speed = 0;
-    double b = 2*max / range;
-    double a = -b / 2*range;
+    double c = getMinSpeed(id) - 500;
+    double a = -(r->getMaxSpeed(id) - c) / (range*range - 2.0*range);
+    double b = -2.0 * a * range;
     int d = abs(current - desired);
-    if (d >= range / 2) speed = max; //param
-    else speed = a*d*d + b*d;
+    if (d >= range) speed = r->getMaxSpeed(id);
+    else speed = a*d*d + b*d + c;
     switch (comparePosition(current, desired, id)) {
     case -1:
         return speed;
@@ -354,12 +367,12 @@ void RobotPositionController::evaluateTask()
 
 inline int comparePosition(int current, int desired, int id) {
     int treshold = 800;
-    switch (id) {
+    switch (id) { //this shit needs testing
     case 4: //elbow
-        treshold = 200; //very bad precision
+        treshold = 300;
         break;
     case 5: //neck
-        treshold = 200;
+        treshold = 400;
         break;
     case 6: //shoulder
         treshold = 200;
@@ -396,8 +409,8 @@ int RobotPositionController::getMotorPositionById(int id)
     case 10: //flippers
         return 1070 + ((230 - flippersAngle) / (230.0 + 93.0)) * (64300 - 1070);
     default:
+        qDebug() << "wrong id in getMotorPositionById";
         return 0;
-        //....
     }
 }
 
@@ -421,8 +434,7 @@ void RobotPositionController::setAngleByMotorId(int id, int position)
         flippersAngle = angle;
         break;
     default:
-        break;
-        //....
+        qDebug() << "wrong id in setAngleByMotorId";
     }
 }
 

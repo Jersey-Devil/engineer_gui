@@ -35,7 +35,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //settings, like speed, see settingsdialog.h for details
     settings = new SettingsDialog(this,robot->configuration);
-
+    renderSettings = new RenderSettings(this, renderWidget);
     //connect robot's signal when position is changed
     //see udpClient, where this signal is emitted
     connect(robot,SIGNAL(telemetryChanged(char*)),this,SLOT(setTelemetry(char*)));
@@ -58,7 +58,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //called when first telemetry packets got, so hide dialog and change button
     //text from "Connect" to "Disconnect"
     connect(robot->controller,SIGNAL(connectedToRobot()),this,SLOT(connectedToRobotUI()));
-
+    connect(controller, SIGNAL(connectionDrop()),this, SLOT(robotDisconnect()));
     //init the values of telemtry view
 
     QStringList lst;
@@ -211,28 +211,28 @@ void MainWindow::on_acceptForms_clicked()
     validateValues();
     ui->neckSlider->setValue(getSliderSpeed(form->neck, robot->configuration->neckSpeed));
     ui->neckLineEdit->setText(QString::number(form->neck));
-    if (form->neck != 0) robot->turnNeck(form->neck);
-    else robot->controller->stopNeck();
+//    if (form->neck != 0) robot->turnNeck(form->neck);
+//    else robot->controller->stopNeck();
     ui->elbowSlider->setValue(getSliderSpeed(form->elbow, robot->configuration->elbowSpeed));
     ui->elbowLineEdit->setText(QString::number(form->elbow));
-    if (form->elbow != 0) robot->turnElbowAndNeck(form->elbow);
-    else robot->controller->stopElbowNeck();
+//    if (form->elbow != 0) robot->turnElbowAndNeck(form->elbow);
+//    else robot->controller->stopElbowNeck();
     ui->waistUpDown->setValue(getSliderSpeed(form->shoulder, robot->configuration->shouldersSpeed));
     ui->shoulderLineEdit->setText(QString::number(form->shoulder));
-    if (form->shoulder != 0) robot->moveWaist(form->shoulder);
-    else robot->controller->stopWaistUpDown();
+//    if (form->shoulder != 0) robot->moveWaist(form->shoulder);
+//    else robot->controller->stopWaistUpDown();
     ui->waistLeftRight->setValue(getSliderSpeed(form->waist, robot->configuration->waistSpeed));
     ui->waistLineEdit->setText(QString::number(form->waist));
-    if (form->waist != 0) robot->turnWaist(form->waist);
-    else robot->controller->stopWaist();
+//    if (form->waist != 0) robot->turnWaist(form->waist);
+//    else robot->controller->stopWaist();
     ui->platformF->setValue(getSliderSpeed(form->platformF, robot->configuration->platformForwardSpeed));
     ui->platformForwardLineEdit->setText(QString::number(form->platformF));
-    if (form->platformF != 0) robot->moveD(form->platformF);
-    else robot->controller->stopPlatformD();
+//    if (form->platformF != 0) robot->moveD(form->platformF);
+//    else robot->controller->stopPlatformD();
     ui->platformR->setValue(getSliderSpeed(form->platformR, robot->configuration->platformRotateSpeed));
     ui->platformRLineEdit->setText(QString::number(form->platformR));
-    if (form->platformR != 0) robot->moveR(form->platformR);
-    else robot->controller->stopPlatformR();
+//    if (form->platformR != 0) robot->moveR(form->platformR);
+//    else robot->controller->stopPlatformR();
 
     /*if(form->platformF>0){
         robot->moveD(form->platformF);
@@ -270,7 +270,7 @@ void MainWindow::on_platformF_valueChanged(int value)
     if (true) {
         if (value==50)
             robot->controller->stopPlatformD();
-        else
+        else //min speed 5000 both forward and rotate
             robot->moveD(getRealSpeed(value, robot->configuration->platformForwardSpeed));
     }
 }
@@ -467,6 +467,7 @@ void MainWindow::on_waistLeftRight_valueChanged(int value)
 {
     ui->waistLineEdit->setText(QString::number(getRealSpeed(value, robot->configuration->waistSpeed)));
 //    if (value%10==0){
+    qDebug() << "onWaistChanged value " << value;
     if (true) {
         if (value==50)
             robot->controller->stopWaist();
@@ -696,4 +697,19 @@ void MainWindow::on_resetPositionButton_clicked()
     renderWidget->mScene.mainModel.resetModelMatrix();
     renderWidget->mScene.mainCamera.reset();
     renderWidget->update();
+}
+
+void MainWindow::on_settingsButton_clicked()
+{
+    renderSettings->show();
+}
+
+void MainWindow::robotDisconnect()
+{
+    on_stopAll_clicked();
+    on_stop_all_position_Button_clicked();
+    setEnabledAllControls(false);
+    robot->disconnectFromEngineer();
+    ui->connectButton->setText("Connecting...");
+    robot->connectToEngineer();
 }
