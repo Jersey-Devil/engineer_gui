@@ -42,6 +42,8 @@ public:
     double getAngleRange(int id);
     virtual void stopTask() override;
 
+signals:
+    void connectionDrop();
 public slots:
     void handleTelemetry(char *data);
 

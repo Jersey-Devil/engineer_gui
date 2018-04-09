@@ -115,6 +115,7 @@ void RobotController::neck(int speed){
     packet->BUTTON[10] = 1;
 }
 void RobotController::elbowNeck(int speed){
+    qDebug() << "elbow neck invoked with " << speed;
     packet->AXIS[4] = limitSpeed(speed);
 
 }

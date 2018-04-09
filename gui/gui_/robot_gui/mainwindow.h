@@ -90,6 +90,8 @@ private slots:
 
     void robotDisconnect();
 
+    void on_resetPositionButton_2_clicked();
+
 public slots:
     //slot to control telemetry from client(robot) and show it
     void setTelemetry(char *buffer);

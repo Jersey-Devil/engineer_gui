@@ -132,12 +132,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::loadModel()
 {
-    QString filename = "/home/avispa/Workspace/Engineer_Gui/3d_model/vehicle-model.dae";
+    QString filename = "/home/avispa/Workspace/Engineer_Gui/3d_model/base.dae";
 
         Model m;
         m.loadFromFilename(filename.toStdString());
-
-        qDebug() << m.mMeshes.size();
         renderWidget->mScene.mainModel = m;
         renderWidget->mRenderer.cleanUp();
         renderWidget->mScene.mainCamera.reset();
@@ -712,4 +710,9 @@ void MainWindow::robotDisconnect()
     robot->disconnectFromEngineer();
     ui->connectButton->setText("Connecting...");
     robot->connectToEngineer();
+}
+
+void MainWindow::on_resetPositionButton_2_clicked()
+{
+    on_stop_all_position_Button_clicked();
 }

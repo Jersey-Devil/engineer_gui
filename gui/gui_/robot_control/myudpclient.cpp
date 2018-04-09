@@ -59,7 +59,7 @@ void UDPClient::listenRobot(){
         emit controller->connectedToRobot();
         if (QString(ADDRESS) != "127.0.0.1")
             connect(connectionTimer, SIGNAL(timeout()), this->controller, SIGNAL(connectionDrop()));
-        connectionTimer->start(1500);
+        connectionTimer->start(2500);
     }
 
     do {

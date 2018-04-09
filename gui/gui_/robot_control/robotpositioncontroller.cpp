@@ -147,13 +147,13 @@ int RobotPositionController::getMaxSpeed(int id)
 {
     switch (id) { //wtf with this shit???
     case 4:
-        return 12000;
+        return 9000;
 //        return this->robot->configuration->elbowSpeed;
     case 5:
-        return 12000;
+        return 9000;
 //        return this->robot->configuration->neckSpeed;
     case 6:
-        return 5000;
+        return 9000;
 //        return this->robot->configuration->shouldersSpeed;
     case 7:
         return 8000;
@@ -206,7 +206,8 @@ void RobotPositionController::handleTelemetry(char *data){
                 if (speed == 0) {
                     this->stopElbowNeck();
                     joints &= ~(0b1U);
-                    qDebug() << "elbow finished, joints = " << QString::number(joints,2);
+                    qDebug() << "elbow finished, joints = " << QString::number(joints,2)
+                             << "angle " << positionInfo->M_DATA[i].POSITION;
                 }
                 else this->elbowNeck(speed);
             }
@@ -215,17 +216,25 @@ void RobotPositionController::handleTelemetry(char *data){
             if ((joints >> 1U & 1U) == 0) {
                 setAngleByMotorId(5, positionInfo->M_DATA[i].POSITION);
             } else {
-                if ((joints & 1U) == 1) break;
+                if ((joints & 1U) != 0) {
+                    setAngleByMotorId(5, positionInfo->M_DATA[i].POSITION);
+                    qDebug() << "skipped neck coz has elbow tack";
+                    break;
+                }
                 speed = calcSpeed(positionInfo->M_DATA[i].POSITION,
                                   getMotorPositionById(positionInfo->M_DATA[i].DEVICE_ID),
                                   positionInfo->M_DATA[i].DEVICE_ID,
                                   this);
+                this->stopElbowNeck();
                 if (speed == 0) {
                     this->stopNeck();
                     joints &= ~(0b10U);
                     qDebug() << "neck finished, joints = " << QString::number(joints,2);
                 }
-                else this->neck(-speed);
+                else {
+
+                    this->neck(-speed);
+                }
             }
             break;
         case 6: //shoulder 100
@@ -289,21 +298,21 @@ int getMinSpeed(int id) {
     case 4:
         return 8000;
     case 5:
-        return 7000;
+        return 6500;
     case 6:
         return 7000;
     case 7:
         return 6500;
     case 10:
     default:
-        return 7000;
+        return 0;
     }
 }
 
 int calcSpeed(int current, int desired, int id, RobotPositionController* r) {
     int range = r->getAngleRange(id) / 4; //param pam pam :)
     int speed = 0;
-    double c = getMinSpeed(id) - 500;
+    double c = getMinSpeed(id) - 1500;
     double a = -(r->getMaxSpeed(id) - c) / (range*range - 2.0*range);
     double b = -2.0 * a * range;
     int d = abs(current - desired);
@@ -372,10 +381,10 @@ inline int comparePosition(int current, int desired, int id) {
         treshold = 300;
         break;
     case 5: //neck
-        treshold = 400;
+        treshold = 300;
         break;
     case 6: //shoulder
-        treshold = 200;
+        treshold = 300;
         break;
     case 7: //waist
         treshold = 200;
