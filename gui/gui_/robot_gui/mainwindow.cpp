@@ -6,6 +6,7 @@
 #include <QStandardItem>
 #include "robotpackets.h"
 #include "robotcontroller.h"
+#include <cmath>
 #include <QThread>
 #include <QString>
 #include <QtDebug>
@@ -132,10 +133,27 @@ MainWindow::~MainWindow()
 
 void MainWindow::loadModel()
 {
-    QString filename = "/home/avispa/Workspace/Engineer_Gui/3d_model/base.dae";
+//    QString filename = "/home/avispa/Workspace/Engineer_Gui/3d_model/robot_test1.dae";
+    QString filename = "/home/avispa/untitled.dae";
 
         Model m;
         m.loadFromFilename(filename.toStdString());
+
+//        glm::mat4 mat(0.0f);
+//        for (Vertex& v : m.mMeshes[1].mVertices) {
+//            v.pos = mat * v.pos;
+//            double a = 1;
+//            double cosa = cos(a);
+//            double sina = sin(a);
+//            v.pos.y = v.pos.y * cosa - v.pos.z * sina;
+//            v.pos.z = v.pos.y * sina + v.pos.z * cosa;
+//        }
+//        for (Mesh& mesh : m.mMeshes) {
+//            for (Vertex& v : mesh.mVertices) {
+
+//            }
+//        }
+
         renderWidget->mScene.mainModel = m;
         renderWidget->mRenderer.cleanUp();
         renderWidget->mScene.mainCamera.reset();
@@ -712,7 +730,12 @@ void MainWindow::robotDisconnect()
     robot->connectToEngineer();
 }
 
-void MainWindow::on_resetPositionButton_2_clicked()
-{
+/*{
     on_stop_all_position_Button_clicked();
-}
+    ui->elbowAngle->setText("0");
+    ui->neckAngle->setText("12");
+    ui->shoulderAngle->setText("0");
+    ui->waistAngle->setText("0");
+    ui->flippersAngle->setText("175");
+    on_acceptButton_clicked();
+}*/

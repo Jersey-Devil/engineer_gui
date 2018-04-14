@@ -35,18 +35,18 @@ void Renderer::prepare()
   shader.compileShadersAndProgram();
   shader.use();
   
-  for (Mesh &mesh : mActiveScene->mainModel.mMeshes) {
-    glGenVertexArrays(1, &mesh.mVAO);
-    glGenBuffers(1, &mesh.mVBO);
-    glGenBuffers(1, &mesh.mEBO);
+  for (Mesh* mesh : mActiveScene->mainModel.mMeshes) {
+    glGenVertexArrays(1, &mesh->mVAO);
+    glGenBuffers(1, &mesh->mVBO);
+    glGenBuffers(1, &mesh->mEBO);
 
-    glBindVertexArray(mesh.mVAO);
+    glBindVertexArray(mesh->mVAO);
 
-    glBindBuffer(GL_ARRAY_BUFFER, mesh.mVBO);
-    glBufferData(GL_ARRAY_BUFFER, mesh.mVertices.size() * sizeof(Vertex), &mesh.mVertices[0], GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, mesh->mVBO);
+    glBufferData(GL_ARRAY_BUFFER, mesh->mVertices.size() * sizeof(Vertex), &mesh->mVertices[0], GL_STATIC_DRAW);
       
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.mEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.mIndices.size() * sizeof(GLuint), &mesh.mIndices[0], GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->mEBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->mIndices.size() * sizeof(GLuint), &mesh->mIndices[0], GL_STATIC_DRAW);
      
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, pos));
@@ -62,7 +62,7 @@ void Renderer::prepare()
 
     glBindVertexArray(0);
 
-    for (Texture &texture : mesh.mTextures) {
+    for (Texture &texture : mesh->mTextures) {
       texture.load();
     }
 
@@ -100,10 +100,10 @@ void Renderer::render()
   else
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-  for (Mesh &mesh : mActiveScene->mainModel.mMeshes) {
+  for (Mesh* mesh : mActiveScene->mainModel.mMeshes) {
 
-    for(size_t i = 0; i < mesh.mTextures.size(); i++) {
-      Texture texture = mesh.mTextures[i];
+    for(size_t i = 0; i < mesh->mTextures.size(); i++) {
+      Texture texture = mesh->mTextures[i];
 
       const char *name;
       glActiveTexture(GL_TEXTURE0 + i);
@@ -122,8 +122,8 @@ void Renderer::render()
       glBindTexture(GL_TEXTURE_2D, texture.getId());
     }
     
-    glBindVertexArray(mesh.mVAO);
-    glDrawElements(GL_TRIANGLES, mesh.mIndices.size(), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(mesh->mVAO);
+    glDrawElements(GL_TRIANGLES, mesh->mIndices.size(), GL_UNSIGNED_INT, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindVertexArray(0);
   }
@@ -145,10 +145,10 @@ void Renderer::cleanUp()
 {
   shader.release();
   
-  for (Mesh &mesh : mActiveScene->mainModel.mMeshes) {
-    glDeleteVertexArrays(1, &mesh.mVAO);
-    glDeleteBuffers(1, &mesh.mVBO);
-    glDeleteBuffers(1, &mesh.mEBO);
+  for (Mesh* mesh : mActiveScene->mainModel.mMeshes) {
+    glDeleteVertexArrays(1, &mesh->mVAO);
+    glDeleteBuffers(1, &mesh->mVBO);
+    glDeleteBuffers(1, &mesh->mEBO);
   }
 
   Texture::release();

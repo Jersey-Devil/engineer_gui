@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -765,19 +765,6 @@
        </property>
        <property name="text">
         <string>Stop all</string>
-       </property>
-      </widget>
-      <widget class="QPushButton" name="resetPositionButton_2">
-       <property name="geometry">
-        <rect>
-         <x>238</x>
-         <y>170</y>
-         <width>111</width>
-         <height>25</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Reset position</string>
        </property>
       </widget>
      </widget>

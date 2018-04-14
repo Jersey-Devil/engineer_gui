@@ -20,7 +20,7 @@ RobotPositionController::~RobotPositionController(){
     delete positionInfo;
 }
 
-double RobotPositionController::getAngleById(int id, int position)
+double RobotPositionController::getAngleById(int id, int position) //grad
 {
     switch (id) {
     case 4: //elbow
@@ -315,7 +315,7 @@ int calcSpeed(int current, int desired, int id, RobotPositionController* r) {
     double c = getMinSpeed(id) - 1500;
     double a = -(r->getMaxSpeed(id) - c) / (range*range - 2.0*range);
     double b = -2.0 * a * range;
-    int d = abs(current - desired);
+    int d = abs(r->getAngleById(id, current) - r->getAngleById(id, desired));//calc in grad
     if (d >= range) speed = r->getMaxSpeed(id);
     else speed = a*d*d + b*d + c;
     switch (comparePosition(current, desired, id)) {
@@ -376,18 +376,24 @@ void RobotPositionController::evaluateTask()
 
 inline int comparePosition(int current, int desired, int id) {
     int treshold = 800;
+    bool small = false;
+    if (abs(current - desired) < 7) small = true;
     switch (id) { //this shit needs testing
     case 4: //elbow
         treshold = 300;
+        if (small) treshold = 100;
         break;
     case 5: //neck
         treshold = 300;
+        if (small) treshold = 100;
         break;
     case 6: //shoulder
         treshold = 300;
+        if (small) treshold = 100;
         break;
     case 7: //waist
         treshold = 200;
+        if (small) treshold = 50;
         break;
     case 10:
     default:

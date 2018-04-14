@@ -7,10 +7,10 @@
 #include "texture.h"
 
 struct Vertex {
-  glm::vec3 pos;
+  glm::vec4 pos;
   glm::vec4 color;
   glm::vec2 texCoords;
-  glm::vec3 nor;
+  glm::vec4 nor;
 };
 
 struct Mesh {
@@ -19,6 +19,12 @@ struct Mesh {
   std::vector<GLuint> mIndices;
   std::vector<Texture> mTextures;
   
+  std::string name;
+  glm::mat4 absTransf;
+  Mesh* parent = nullptr;
+  Mesh** children = nullptr;
+  size_t childrenCount = 0;
+
   GLuint mVAO;
   GLuint mVBO;
   GLuint mEBO;

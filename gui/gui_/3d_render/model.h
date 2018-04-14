@@ -20,7 +20,8 @@ public:
   Model();
   ~Model();
 
-  std::vector<Mesh> mMeshes;
+  std::vector<Mesh*> mMeshes;
+  Mesh* find(std::string name);
   void rotateHorizontally(float angle);
   void rotateVertically(float angle);
   void loadFromFilename(std::string filename);
@@ -30,8 +31,14 @@ public:
 private:
   std::string mCurrentFolder;
   glm::mat4 mModelMatrix;
-  Mesh loadMesh(const aiMesh*, const aiScene*);
-  void iterateNode(const aiNode*, const aiScene*);
+  Mesh* root;
+  Mesh* loadMesh(const aiMesh*, const aiScene*scene, Mesh *parent);
+  void applyTransform(Mesh* mesh, glm::mat4 &mat);
+  void _applyTransform(Mesh* mesh, glm::mat4 &mat);
+  void applyTransform(aiMesh* mesh, const aiMatrix4x4& mat);
+  void applyTransformCascade(Mesh* mesh, glm::mat4& mat);
+  void computeAbsoluteTransform( aiNode* pcNode );
+  void iterateNode(const aiNode*, const aiScene*, Mesh *parent);
   std::vector<Texture> getTextures(const aiMaterial *material, TextureType textureType);
 };
 

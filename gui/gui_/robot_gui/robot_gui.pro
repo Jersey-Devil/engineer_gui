@@ -14,6 +14,7 @@ CONFIG += c++1z
 QMAKE_LFLAGS += -Wl,--no-allow-shlib-undefined,--no-undefined
 QMAKE_LFLAGS_RELEASE = "-Wl,-rpath=\'\$$ORIGIN\'"
 
+INCLUDEPATH += /usr/local/include/c++/7.2.0
 INCLUDEPATH += $$PWD/../robot_control
 DEPENDPATH += $$PWD/../robot_control
 

@@ -1,7 +1,10 @@
 #include "model.h"
 #include "mesh.h"
+#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <vector>
+#include <QtDebug>
+#include <QString>
 
 Model::Model()
 {
@@ -13,11 +16,40 @@ Model::~Model()
 
 }
 
+Mesh* _find(std::string name, Mesh* start) {
+    if (start == nullptr || start->name == name) return start;
+    Mesh* res = nullptr;
+    for (size_t i = 0; i < start->childrenCount; ++i) {
+        res = _find(name, start->children[i]);
+        if (res != nullptr) return res;
+    }
+    return nullptr;
+}
+
+Mesh *Model::find(std::string name)
+{
+    return _find(name, root);
+}
+
+static inline glm::mat4 aiToGlm(const aiMatrix4x4 &m) {
+    return glm::transpose(glm::make_mat4(&m.a1));
+}
+
+glm::vec4 aiToGlm(aiVector3D v) {
+    return glm::vec4(v[0], v[1], v[2], 1.0f);
+}
+
+aiVector3D glmToAi(glm::vec4 v) {
+    return aiVector3D(v.x, v.y, v.z);
+}
+
 void Model::loadFromFilename(std::string filename)
 { 
   Assimp::Importer import;
   import.SetPropertyInteger(AI_CONFIG_PP_PTV_NORMALIZE,1);
-  const aiScene* scene = import.ReadFile(filename, aiProcess_JoinIdenticalVertices | aiProcess_OptimizeMeshes | aiProcess_PreTransformVertices | aiProcess_Triangulate | aiProcess_FlipUVs);
+//  import.SetPropertyInteger(AI_CONFIG_PP_PTV_KEEP_HIERARCHY,1);
+//  const aiScene* scene = import.ReadFile(filename, aiProcess_JoinIdenticalVertices | aiProcess_OptimizeMeshes | aiProcess_PreTransformVertices | aiProcess_Triangulate | aiProcess_FlipUVs);
+  const aiScene* scene = import.ReadFile(filename, aiProcess_JoinIdenticalVertices | aiProcess_OptimizeMeshes | aiProcess_Triangulate | aiProcess_FlipUVs);
   if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) 
   {
     std::cout << "Error at loading model: " << import.GetErrorString() << "\n";
@@ -26,48 +58,75 @@ void Model::loadFromFilename(std::string filename)
 
   mCurrentFolder = filename.substr(0, filename.find_last_of("/"));
 
-//  qDebug() << mMeshes.size();
-  iterateNode(scene->mRootNode, scene);
-//  qDebug() << mMeshes.size();
+  computeAbsoluteTransform(scene->mRootNode);
+  iterateNode(scene->mRootNode, scene, nullptr);
+  root = mMeshes[0];
+//  Mesh* flippers = find("Flippers");
+//  applyTransform(flippers, glm::transpose(glm::inverse(flippers->absTransf)));
+//  qDebug() << (glm::inverse(sea->absTransf) == glm::mat4(1.0f));
+  Mesh* sea = find("Shoulder_elbow_arm");
+  Mesh* ena = find("Elbow_neck_arm");
+  Mesh* h = find("Head");
+  glm::mat4 tr;
+  tr = glm::rotate(glm::mat4(), -0.5f, glm::vec3(0.0f,0.0f,1.0f));
+  applyTransform(sea, tr);
+  tr = /*ena->absTransf */
+          glm::rotate(glm::mat4(), -0.5f, glm::vec3(1.0f,0.0f,0.0f))
+          /* glm::inverse(ena->absTransf)*/;
+//  applyTransform(ena, tr);
+
+//  _applyTransform(h, tr);
+//  applyTransform(find("Flippers"), glm::rotate(glm::mat4(), 1.0f, glm::vec3(1.0f,0.0f,0.0f)));
+
+//  applyTransform(mMeshes[2], glm::rotate(glm::mat4(), 1.0f, glm::vec3(1.0f,0.0f,0.0f)));
 }
 
-void Model::iterateNode(const aiNode *node, const aiScene *scene)
+void Model::iterateNode(const aiNode *node, const aiScene *scene, Mesh* parent)
 {
 
-//  mMeshes.clear();
-//  qDebug() << mMeshes.size();
+    if (node->mNumMeshes > 1) qDebug() << "fuck! " << node->mNumMeshes << " in node";
+    if (parent != nullptr) {
+        parent->childrenCount += node->mNumMeshes;
+        if (parent->children == nullptr) parent->children = new Mesh*[2];
+    }
+    Mesh *mptr = nullptr;
   for (size_t i = 0; i < node->mNumMeshes; i++) {
     aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-//    qDebug() << mMeshes.size();
-//    qDebug() << "mesh size " << sizeof(Mesh);
-//    qDebug() << "mesh* size " << sizeof(Mesh*);
-    mMeshes.emplace_back(loadMesh(mesh, scene));
-//    qDebug() << mMeshes.size();
+    applyTransform(mesh, node->mTransformation);
+    mptr = loadMesh(mesh, scene, parent);
+    mptr->absTransf = aiToGlm(node->mTransformation);
+//    _applyTransform(mptr, mptr->absTransf);
+//    qDebug() << QString::fromStdString(mptr->name);
+//    qDebug() << (mptr->absTransf == glm::mat4(1.0f));
+    if (parent != nullptr) parent->children[(parent->childrenCount - node->mNumMeshes) + i] = mptr;
+    if (root == nullptr && parent == nullptr) root = mptr;
+    mMeshes.emplace_back(mptr);
   }
-//  qDebug() << mMeshes.size();
   for (size_t i = 0; i < node->mNumChildren; i++) {//recursion problem!
-    iterateNode(node->mChildren[i], scene);
+    iterateNode(node->mChildren[i], scene, mptr);
   }
 //  qDebug() << mMeshes.size();
-
 }
 
-Mesh Model::loadMesh(const aiMesh *asMesh, const aiScene *scene)
+Mesh* Model::loadMesh(const aiMesh *asMesh, const aiScene *scene, Mesh* parent)
 {
   std::vector<Vertex> vertices;
-
+//    qDebug() << "loaded " << asMesh->mName.C_Str() << " transformed " << transforms.size();
   for (size_t i = 0; i < asMesh->mNumVertices; i++) {
     Vertex vertex;
-    glm::vec3 vect3;
-    vect3.x = asMesh->mVertices[i].x;
-    vect3.y = asMesh->mVertices[i].y;
-    vect3.z = asMesh->mVertices[i].z;
-    vertex.pos = vect3;
+    glm::vec4 vect;
 
-    vect3.x = asMesh->mNormals[i].x;
-    vect3.y = asMesh->mNormals[i].y;
-    vect3.z = asMesh->mNormals[i].z;
-    vertex.nor = vect3;
+    vect.x = asMesh->mVertices[i].x;
+    vect.y = asMesh->mVertices[i].y;
+    vect.z = asMesh->mVertices[i].z;
+    vect.w = 1.0f;
+    vertex.pos = vect;
+
+    vect.x = asMesh->mNormals[i].x;
+    vect.y = asMesh->mNormals[i].y;
+    vect.z = asMesh->mNormals[i].z;
+    vect.w = 0.0f;
+    vertex.nor = vect;
 
     if (asMesh->mColors[0]) {
       glm::vec4 vect4;
@@ -114,14 +173,115 @@ Mesh Model::loadMesh(const aiMesh *asMesh, const aiScene *scene)
   
   
 
-  Mesh mesh;
-  mesh.mVertices = vertices;
-  mesh.mIndices = indices;
-  mesh.mTextures = textures;
+  Mesh* mesh = new Mesh;
+  mesh->mVertices = vertices;
+  mesh->mIndices = indices;
+  mesh->mTextures = textures;
+  mesh->name = std::string(asMesh->mName.C_Str());
+  mesh->parent = parent;
 
   return mesh;
   
 }
+
+void Model::applyTransform(Mesh *mesh, glm::mat4 &mat)
+{
+    if (mat != glm::mat4(1.0f)) {
+        mat = mesh->absTransf * mat * glm::inverse(mesh->absTransf);
+        glm::mat4 mWorldIT = glm::transpose(glm::inverse(mat));
+        for (Vertex& v : mesh->mVertices) {
+            v.pos = mat * v.pos;
+            v.nor = glm::normalize(mWorldIT * v.nor);
+        }
+        for (size_t i = 0; i < mesh->childrenCount; ++i) {
+            applyTransformCascade(mesh->children[i],  mat);
+        }
+    }
+}
+
+void Model::_applyTransform(Mesh *mesh, glm::mat4 &mat)
+{
+    if (mat != glm::mat4(1.0f)) {
+        glm::mat4 mWorldIT = glm::transpose(glm::inverse(mat));
+        for (Vertex& v : mesh->mVertices) {
+            v.pos = mat * v.pos;
+            v.nor = glm::normalize(mWorldIT * v.nor);
+        }
+    }
+}
+
+void Model::applyTransformCascade(Mesh* mesh, glm::mat4& mat) {
+
+    glm::mat4 mWorldIT = glm::transpose(glm::inverse(mat));
+    for (Vertex& v : mesh->mVertices) {
+        v.pos = mat * v.pos;
+        v.nor = glm::normalize(mWorldIT * v.nor);
+    }
+    for (size_t i = 0; i < mesh->childrenCount; ++i) {
+        applyTransformCascade(mesh->children[i], mat);
+    }
+
+}
+
+void Model::applyTransform(aiMesh* mesh, const aiMatrix4x4& mat)
+{
+//    glm::mat4 mat1 = aiToGlm(mat);
+    // Check whether we need to transform the coordinates at all
+    if (!mat.IsIdentity()) {
+
+        if (mesh->HasPositions()) {
+            for (unsigned int i = 0; i < mesh->mNumVertices; ++i) {
+                mesh->mVertices[i] = mat * mesh->mVertices[i];
+//                mesh->mVertices[i] = glmToAi(mat1 * aiToGlm(mesh->mVertices[i]));
+            }
+        }
+        if (mesh->HasNormals() || mesh->HasTangentsAndBitangents()) {
+            aiMatrix4x4 mWorldIT = mat;
+            mWorldIT.Inverse().Transpose();
+
+            // TODO: implement Inverse() for aiMatrix3x3
+            aiMatrix3x3 m = aiMatrix3x3(mWorldIT);
+
+            if (mesh->HasNormals()) {
+                for (unsigned int i = 0; i < mesh->mNumVertices; ++i) {
+                    mesh->mNormals[i] = (m * mesh->mNormals[i]).Normalize();
+                }
+            }
+            if (mesh->HasTangentsAndBitangents()) {
+                for (unsigned int i = 0; i < mesh->mNumVertices; ++i) {
+                    mesh->mTangents[i]   = (m * mesh->mTangents[i]).Normalize();
+                    mesh->mBitangents[i] = (m * mesh->mBitangents[i]).Normalize();
+                }
+            }
+        }
+    }
+}
+
+void Model::computeAbsoluteTransform( aiNode* pcNode )
+{
+    if (pcNode->mParent)    {
+        pcNode->mTransformation = pcNode->mParent->mTransformation*pcNode->mTransformation;
+    }
+
+    for (unsigned int i = 0;i < pcNode->mNumChildren;++i)   {
+        computeAbsoluteTransform(pcNode->mChildren[i]);
+    }
+}
+
+//void Model::calcVertices(Mesh* m, glm::mat4 mat) {
+////    mat = mat * m->relTransf;
+//    mat = m->relTransf;
+//    glm::mat4 mWorldIT = glm::transpose(glm::inverse(mat));
+//    m->mVertices.reserve(m->relVertices.size());
+//    for (Vertex v : m->relVertices) {
+////            v.pos = mat * v.pos;
+////            v.nor = glm::normalize(mWorldIT * v.nor);
+//        m->mVertices.emplace_back(v);
+//    }
+//    for (size_t i = 0; i < m->childrenCount; ++i) {
+//        calcVertices(m->children[i], mat);
+//    }
+//}
 
 std::vector<Texture> Model::getTextures(const aiMaterial *material, TextureType textureType)
 {
