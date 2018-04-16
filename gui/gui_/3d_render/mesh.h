@@ -21,6 +21,7 @@ struct Mesh {
   
   std::string name;
   glm::mat4 absTransf;
+  glm::mat4 relTransf;
   Mesh* parent = nullptr;
   Mesh** children = nullptr;
   size_t childrenCount = 0;

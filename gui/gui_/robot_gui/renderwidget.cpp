@@ -72,15 +72,15 @@ void RenderWidget::mouseMoveEvent(QMouseEvent *event)
         yoffset *= sensitivity * speed;
 
         if (xoffset > 0) {
-          mScene.mainCamera.move(RIGHTWARD, xoffset);
+          mScene.mainCamera.move(RIGHTWARD, -xoffset);
         } else if (xoffset < 0){
-          mScene.mainCamera.move(LEFTWARD, -xoffset);
+          mScene.mainCamera.move(LEFTWARD, +xoffset);
         }
 
         if (yoffset > 0) {
-          mScene.mainCamera.move(UPWARD, yoffset);
+          mScene.mainCamera.move(UPWARD, -yoffset);
         } else if (yoffset < 0){
-          mScene.mainCamera.move(DOWNWARD, -yoffset);
+          mScene.mainCamera.move(DOWNWARD, +yoffset);
         }
         update();
     }

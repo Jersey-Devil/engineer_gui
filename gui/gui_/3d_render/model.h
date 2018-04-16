@@ -33,12 +33,12 @@ private:
   glm::mat4 mModelMatrix;
   Mesh* root;
   Mesh* loadMesh(const aiMesh*, const aiScene*scene, Mesh *parent);
-  void applyTransform(Mesh* mesh, glm::mat4 &mat);
-  void _applyTransform(Mesh* mesh, glm::mat4 &mat);
+  void applyTransform(Mesh* mesh, glm::mat4 &rot);
+  void _applyTransform(Mesh* mesh, glm::mat4 mat);
   void applyTransform(aiMesh* mesh, const aiMatrix4x4& mat);
-  void applyTransformCascade(Mesh* mesh, glm::mat4& mat);
+  void applyTransformCascade(Mesh* mesh, glm::mat4 &mat);
   void computeAbsoluteTransform( aiNode* pcNode );
-  void iterateNode(const aiNode*, const aiScene*, Mesh *parent);
+  void iterateNode(const aiNode*, const aiScene*, Mesh *parent, glm::mat4 tf);
   std::vector<Texture> getTextures(const aiMaterial *material, TextureType textureType);
 };
 

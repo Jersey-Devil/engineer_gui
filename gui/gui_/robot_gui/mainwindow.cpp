@@ -134,7 +134,7 @@ MainWindow::~MainWindow()
 void MainWindow::loadModel()
 {
 //    QString filename = "/home/avispa/Workspace/Engineer_Gui/3d_model/robot_test1.dae";
-    QString filename = "/home/avispa/untitled.dae";
+    QString filename = "/home/avispa/untitled1.dae";
 
         Model m;
         m.loadFromFilename(filename.toStdString());
