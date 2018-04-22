@@ -1,7 +1,7 @@
 #include "myqslider.h"
 #include <QSlider>
 #include <QDebug>
-MyQSlider::MyQSlider(QObject *parent)
+MyQSlider::MyQSlider(QObject *parent __attribute__((unused)))
 {
     //connect to add custom action
     connect(this, SIGNAL(sliderReleased()),this, SLOT(my_sliderMoved()));

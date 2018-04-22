@@ -33,7 +33,6 @@ MainWindow::MainWindow(QWidget *parent) :
 //    robot = new Robot();
     robot = new RobotSI();
     connect(robot, SIGNAL(videoFrameSended(char*, int)), this, SLOT(handleVideoFrame(char*, int)));
-
     //settings, like speed, see settingsdialog.h for details
     settings = new SettingsDialog(this,robot->configuration);
     renderSettings = new RenderSettings(this, renderWidget);
@@ -153,7 +152,7 @@ void MainWindow::loadModel()
 
 //            }
 //        }
-
+//        connect(robot->controller, SIGNAL(deltasUpdated(Joints*)), renderWidget, SLOT(deltasUpdated(Joints*)));
         renderWidget->mScene.mainModel = m;
         renderWidget->mRenderer.cleanUp();
         renderWidget->mScene.mainCamera.reset();

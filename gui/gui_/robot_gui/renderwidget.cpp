@@ -14,7 +14,6 @@ RenderWidget::~RenderWidget()
 void RenderWidget::initializeGL()
 {
     makeCurrent();
-
     mRenderer.setActiveScene(mScene);
     mRenderer.prepare();
 }
@@ -29,6 +28,16 @@ void RenderWidget::resizeGL(int w, int h)
     mRenderer.resize(w,h);
 }
 
+void RenderWidget::deltasUpdated(Joints *j)
+{
+    mScene.mainModel.rotateFlippers(j->flippers);
+    mScene.mainModel.rotateWaist(j->waist);
+    mScene.mainModel.rotateShoulder(j->shoulder);
+    mScene.mainModel.rotateElbow(j->elbow);
+    mScene.mainModel.rotateNeck(j->neck);
+    update();
+}
+
 Qt::MouseButton clickedButton = Qt::NoButton;
 int clickX = -1;
 int clickY = -1;
@@ -40,7 +49,7 @@ void RenderWidget::mousePressEvent(QMouseEvent *event)
     clickY = event->y();
 }
 
-void RenderWidget::mouseReleaseEvent(QMouseEvent *event)
+void RenderWidget::mouseReleaseEvent(QMouseEvent *event __attribute__((unused)))
 {
     clickedButton = Qt::NoButton;
     clickX = -1;

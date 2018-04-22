@@ -4,6 +4,7 @@
 #include "robotpackets.h"
 #include "robotcontroller.h"
 #include "robot.h"
+#include "joints.h"
 
 //1 degree of angle in Servosila's joints
 #define ANGLE_DELTA 182
@@ -12,6 +13,7 @@
  * @brief The RobotPositionController class
  * This class is used for robot manipulating using position values, like degrees of joints
  */
+
 class RobotPositionController : public RobotController
 {
     Q_OBJECT
@@ -44,6 +46,7 @@ public:
 
 signals:
     void connectionDrop();
+    void deltasUpdated(Joints* d);
 public slots:
     void handleTelemetry(char *data);
 
@@ -51,6 +54,7 @@ private:
     int getMotorPositionById(int id);
     void setAngleByMotorId(int id, int position);
     bool hasPositionData(int id);
+    Joints* deltas;
     double flippersAngle; // 230.0 -> -93.0
     double waistAngle; // -214.2 -> 137.3
     double elbowAngle; // -216.9 -> 0.0

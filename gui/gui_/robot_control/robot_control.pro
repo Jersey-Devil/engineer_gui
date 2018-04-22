@@ -42,7 +42,8 @@ HEADERS += \
         robotpositioncontroller.h \
         robot_control_global.h \ 
         robotpackets.h \
-    robotsi.h
+    robotsi.h \
+    joints.h
 
 unix {
     target.path = /usr/lib

@@ -5,7 +5,7 @@
 #include <GL/glew.h>
 
 #include "renderer.h"
-
+#include "joints.h"
 #include <QOpenGLWidget>
 #include <QMouseEvent>
 #include <QWheelEvent>
@@ -13,6 +13,8 @@
 namespace Ui {
 class RenderWidget;
 }
+
+
 
 class RenderWidget : public QOpenGLWidget
 {
@@ -29,6 +31,9 @@ public:
 
     Renderer mRenderer = Renderer::getInstance();
     Scene mScene;
+
+public slots:
+    void deltasUpdated(Joints* j);
 
 private:
     void mouseMoveEvent(QMouseEvent *event);

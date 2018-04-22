@@ -13,6 +13,7 @@ int calcSpeed(int, int, int, RobotPositionController*);
 RobotPositionController::RobotPositionController(Robot *r): RobotController(r)
 {
     joints = 0U;
+    deltas = new Joints;
     positionInfo = new TelemetryPacket;
 }
 
@@ -292,6 +293,7 @@ void RobotPositionController::handleTelemetry(char *data){
             break;
         }
     }
+    emit deltasUpdated(deltas);
 }
 int getMinSpeed(int id) {
     switch (id) {
@@ -434,18 +436,23 @@ void RobotPositionController::setAngleByMotorId(int id, int position)
     double angle = getAngleById(id, position);
     switch (id) {
     case 4: //elbow
+        deltas->elbow = elbowAngle - angle;
         elbowAngle = angle;
         break;
     case 5: //neck
+        deltas->neck = neckAngle - angle;
         neckAngle = angle;
         break;
     case 6: //shoulder
+        deltas->shoulder = shoulderAngle - angle;
         shoulderAngle = angle;
         break;
     case 7: //waist
+        deltas->waist = waistAngle - angle;
         waistAngle = angle;
         break;
     case 10: //flippers
+        deltas->flippers = flippersAngle - angle;
         flippersAngle = angle;
         break;
     default:

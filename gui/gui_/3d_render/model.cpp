@@ -11,9 +11,46 @@ Model::Model()
 
 }
 
+glm::mat4 makeRotMat(float degree, int axis) {
+    switch (axis) {
+    case 1:
+        return glm::rotate(glm::mat4(1.0f), glm::radians(degree), glm::vec3(1.0f,0.0f,0.0f));
+    case 2:
+        return glm::rotate(glm::mat4(1.0f), glm::radians(degree), glm::vec3(0.0f,1.0f,0.0f));
+    case 3:
+    default:
+        return glm::rotate(glm::mat4(1.0f), glm::radians(degree), glm::vec3(0.0f,0.0f,1.0f));
+    }
+}
+
 Model::~Model()
 {
 
+}
+
+void Model::rotateFlippers(float angle)
+{
+    applyTransform(flippers, makeRotMat(angle, 1));
+}
+
+void Model::rotateWaist(float angle)
+{
+    applyTransform(sea, makeRotMat(angle, 3));
+}
+
+void Model::rotateShoulder(float angle)
+{
+    applyTransform(sea, makeRotMat(angle, 1));
+}
+
+void Model::rotateElbow(float angle)
+{
+    applyTransform(ena, makeRotMat(angle, 1));
+}
+
+void Model::rotateNeck(float angle)
+{
+    applyTransform(head, makeRotMat(angle, 1));
 }
 
 Mesh* _find(std::string name, Mesh* start) {
@@ -61,82 +98,18 @@ void Model::loadFromFilename(std::string filename)
 //  computeAbsoluteTransform(scene->mRootNode);
   iterateNode(scene->mRootNode, scene, nullptr, glm::mat4(1.0f));
   root = mMeshes[0];
-//  Mesh* flippers = find("Flippers");
-//  applyTransform(flippers, glm::transpose(glm::inverse(flippers->absTransf)));
-//  qDebug() << (glm::inverse(sea->absTransf) == glm::mat4(1.0f));
-  Mesh* sea = find("s-e-arm");
-  Mesh* ena = find("e-n-arm");
-  Mesh* head = find("head");
-  glm::mat4 tr;
+  flippers = find("flippers");
+  base = find("base");
+  sea = find("s-e-arm");
+  ena = find("e-n-arm");
+  head = find("head");
 
-//  tr = glm::rotate(glm::mat4(), -0.5f, glm::vec3(1.0f,0.0f,0.0f));
-//  tr = glm::translate(glm::mat4(), glm::vec3(0.0f,0.0f,0.0f));
-  glm::mat4 rot;
-//  glm::mat4 absHead = head->absTransf;
-//  glm::mat4 relHead = head->relTransf;
-
-
-
-//  rot = glm::rotate(glm::mat4(), 0.5f, glm::vec3(0.0f,0.0f,1.0f));
-//  tr = sea->absTransf * rot * glm::inverse(sea->absTransf);
-//  _applyTransform(sea,tr);
-//  _applyTransform(ena,tr);
-//  _applyTransform(head,tr);
-
-//  sea->relTransf = sea->relTransf * rot;
-//  sea->absTransf = sea->parent->absTransf * sea->relTransf;
-////  ena->relTransf = ena->relTransf * rot;
-//  ena->absTransf = ena->parent->absTransf * ena->relTransf;
-//  ena->relTransf = glm::inverse(ena->parent->absTransf * glm::inverse(ena->absTransf));
-
-//  head->absTransf = head->parent->absTransf * head->relTransf;
-////  head->relTransf = glm::inverse(head->parent->absTransf * glm::inverse(head->absTransf));
-//  _applyTransform(head, head->parent->absTransf * glm::inverse(head->absTransf));
-//  _applyTransform(ena, );
-//  _applyTransform(head, glm::inverse(head->relTransf));
-
-
-
-
-//  applyTransform(ena, tr);
-  tr = glm::rotate(glm::mat4(), -0.5f, glm::vec3(0.0f,0.0f,1.0f));
-  applyTransform(sea, tr);
-  tr = glm::rotate(glm::mat4(), -0.5f, glm::vec3(1.0f,0.0f,0.0f));
-  applyTransform(ena, tr);
-  tr = glm::rotate(glm::mat4(), -0.5f, glm::vec3(1.0f,0.0f,0.0f));
-  applyTransform(head, tr);
-//  tr = glm::rotate(glm::mat4(), 0.5f, glm::vec3(1.0f,0.0f,0.0f));
-//  applyTransform(ena, tr);
-
-//  rot = glm::rotate(glm::mat4(), 0.5f, glm::vec3(1.0f,0.0f,0.0f));
-//  qDebug() << (head->parent->absTransf*head->relTransf == head->absTransf);
-//  _applyTransform(head, glm::inverse(head->parent->absTransf * head->relTransf * tr));
-//  _applyTransform(head, glm::inverse(head->relTransf));
-//  _applyTransform(head, glm::inverse(head->parent->relTransf));
-//  _applyTransform(ena, glm::inverse(ena->relTransf));
-//  _applyTransform(ena, glm::inverse(ena->parent->relTransf));
-//  _applyTransform(head, rot);
-//  _applyTransform(ena, glm::inverse(ena->relTransf));
-//  rot = glm::rotate(glm::mat4(), 0.5f, glm::vec3(1.0f,0.0f,0.0f));
-//  applyTransform(ena, rot);
-
-
-
-
-  rot = glm::rotate(glm::mat4(), -0.5f, glm::vec3(1.0f,0.0f,0.0f));
-
-  tr = glm::rotate(glm::mat4(), -0.5f, glm::vec3(1.0f,0.0f,0.0f));
-//  applyTransform(find("flippers"), tr);
-
-
-
-//  tr = glm::rotate(glm::mat4(), 0.5f, glm::vec3(0.0f,0.0f,1.0f));
-//  applyTransform(ena, tr);
-
-//  _applyTransform(h, tr);
-//  applyTransform(find("Flippers"), glm::rotate(glm::mat4(), 1.0f, glm::vec3(1.0f,0.0f,0.0f)));
-
-//  applyTransform(mMeshes[2], glm::rotate(glm::mat4(), 1.0f, glm::vec3(1.0f,0.0f,0.0f)));
+//  rotateWaist(30);
+//  rotateWaist(30);
+//  rotateShoulder(-30);
+//  rotateNeck(20);
+//  rotateShoulder(30);
+//  rotateWaist(-30);
 }
 
 void Model::iterateNode(const aiNode *node, const aiScene *scene, Mesh* parent, glm::mat4 tf)
@@ -148,18 +121,13 @@ void Model::iterateNode(const aiNode *node, const aiScene *scene, Mesh* parent, 
         if (parent->children == nullptr) parent->children = new Mesh*[2];
     }
     Mesh *mptr = nullptr;
-//    if (node.)
     tf = tf * aiToGlm(node->mTransformation);
   for (size_t i = 0; i < node->mNumMeshes; i++) {
     aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-//    applyTransform(mesh, tf);
     mptr = loadMesh(mesh, scene, parent);
     _applyTransform(mptr, tf);
     mptr->absTransf = tf;
     mptr->relTransf = aiToGlm(node->mTransformation);
-//    _applyTransform(mptr, mptr->absTransf);
-//    qDebug() << QString::fromStdString(mptr->name);
-//    qDebug() << (mptr->absTransf == glm::mat4(1.0f));
     if (parent != nullptr) parent->children[(parent->childrenCount - node->mNumMeshes) + i] = mptr;
     if (root == nullptr && parent == nullptr) root = mptr;
     mMeshes.emplace_back(mptr);
@@ -167,7 +135,6 @@ void Model::iterateNode(const aiNode *node, const aiScene *scene, Mesh* parent, 
   for (size_t i = 0; i < node->mNumChildren; i++) {//recursion problem!
     iterateNode(node->mChildren[i], scene, mptr, tf);
   }
-//  qDebug() << mMeshes.size();
 }
 
 Mesh* Model::loadMesh(const aiMesh *asMesh, const aiScene *scene, Mesh* parent)
@@ -246,7 +213,7 @@ Mesh* Model::loadMesh(const aiMesh *asMesh, const aiScene *scene, Mesh* parent)
   
 }
 
-void Model::applyTransform(Mesh *mesh, glm::mat4 &rot)
+void Model::applyTransform(Mesh *mesh, const glm::mat4 &rot)
 {
     if (rot != glm::mat4(1.0f)) {
         glm::mat4 mat = mesh->absTransf * rot * glm::inverse(mesh->absTransf);
@@ -256,8 +223,8 @@ void Model::applyTransform(Mesh *mesh, glm::mat4 &rot)
             v.nor = glm::normalize(mWorldIT * v.nor);
         }
         if (mesh->parent) {
-            mesh->relTransf = mesh->relTransf * rot;
-            mesh->absTransf = mesh->parent->absTransf * mesh->relTransf;
+            mesh->absTransf = mesh->absTransf * rot;
+//            mesh->relTransf = glm::inverse(mesh->parent->absTransf * glm::inverse(mesh->absTransf));
         }
         for (size_t i = 0; i < mesh->childrenCount; ++i) {
             applyTransformCascade(mesh->children[i], mat);
@@ -265,7 +232,7 @@ void Model::applyTransform(Mesh *mesh, glm::mat4 &rot)
     }
 }
 
-void Model::_applyTransform(Mesh *mesh, glm::mat4 mat)
+void Model::_applyTransform(Mesh *mesh, const glm::mat4 &mat)
 {
     if (mat != glm::mat4(1.0f)) {
         glm::mat4 mWorldIT = glm::transpose(glm::inverse(mat));
@@ -276,7 +243,7 @@ void Model::_applyTransform(Mesh *mesh, glm::mat4 mat)
     }
 }
 
-void Model::applyTransformCascade(Mesh* mesh, glm::mat4& mat) {
+void Model::applyTransformCascade(Mesh* mesh, const glm::mat4 &mat) {
 
     glm::mat4 mWorldIT = glm::transpose(glm::inverse(mat));
     for (Vertex& v : mesh->mVertices) {
@@ -284,7 +251,10 @@ void Model::applyTransformCascade(Mesh* mesh, glm::mat4& mat) {
         v.nor = glm::normalize(mWorldIT * v.nor);
     }
     mesh->absTransf = mesh->parent->absTransf * mesh->relTransf;
-    mesh->relTransf = glm::inverse(mesh->parent->absTransf * glm::inverse(mesh->absTransf));
+//    mesh->relTransf = glm::inverse(mesh->parent->absTransf * glm::inverse(mesh->absTransf));
+
+
+
 //    mesh->relTransf = glm::inverse(rot) * mesh->relTransf;
 
 //    mesh->absTransf = mesh->absTransf * rot;
@@ -405,5 +375,5 @@ void Model::resetModelMatrix()
 
 glm::mat4 Model::getModelMatrix()
 {
-  return mModelMatrix;
-}  
+    return mModelMatrix;
+}
