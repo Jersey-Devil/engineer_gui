@@ -8,7 +8,12 @@
 
 Model::Model()
 {
-
+    joints = new Joints; // change this shit
+    joints->elbow = 0.0;
+    joints->waist = 0.0;
+    joints->shoulder = 0.0;
+    joints->neck = 12.5;
+    joints->flippers = 180.0;
 }
 
 glm::mat4 makeRotMat(float degree, int axis) {
@@ -25,32 +30,37 @@ glm::mat4 makeRotMat(float degree, int axis) {
 
 Model::~Model()
 {
-
+    delete joints;
 }
 
 void Model::rotateFlippers(float angle)
 {
-    applyTransform(flippers, makeRotMat(angle, 1));
+    applyTransform(flippers, makeRotMat(angle - joints->flippers, 1));
+    joints->flippers = angle;
 }
 
 void Model::rotateWaist(float angle)
 {
-    applyTransform(sea, makeRotMat(angle, 3));
+    applyTransform(sea, makeRotMat(angle - joints->waist, 3));
+    joints->waist = angle;
 }
 
 void Model::rotateShoulder(float angle)
 {
-    applyTransform(sea, makeRotMat(angle, 1));
+    applyTransform(sea, makeRotMat(angle - joints->shoulder, 1));
+    joints->shoulder = angle;
 }
 
 void Model::rotateElbow(float angle)
 {
-    applyTransform(ena, makeRotMat(angle, 1));
+    applyTransform(ena, makeRotMat(angle - joints->elbow, 1));
+    joints->elbow = angle;
 }
 
 void Model::rotateNeck(float angle)
 {
-    applyTransform(head, makeRotMat(angle, 1));
+    applyTransform(head, makeRotMat(angle - joints->neck, 1));
+    joints->neck = angle;
 }
 
 Mesh* _find(std::string name, Mesh* start) {
@@ -105,11 +115,20 @@ void Model::loadFromFilename(std::string filename)
   head = find("head");
 
 //  rotateWaist(30);
-//  rotateWaist(30);
+//  rotateFlippers(30);
 //  rotateShoulder(-30);
+//  rotateFlippers(-10);
 //  rotateNeck(20);
-//  rotateShoulder(30);
-//  rotateWaist(-30);
+//  rotateShoulder(5);
+//  rotateWaist(-10);
+//  rotateNeck(-10);
+//  rotateFlippers(10);
+//  rotateShoulder(10);
+//  rotateWaist(10);
+//  rotateNeck(10);
+//  rotateShoulder(40);
+//  rotateFlippers(-50);
+//  rotateElbow(-30);
 }
 
 void Model::iterateNode(const aiNode *node, const aiScene *scene, Mesh* parent, glm::mat4 tf)

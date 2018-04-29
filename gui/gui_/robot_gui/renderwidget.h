@@ -33,7 +33,7 @@ public:
     Scene mScene;
 
 public slots:
-    void deltasUpdated(Joints* j);
+    void jointsUpdated(Joints* j);
 
 private:
     void mouseMoveEvent(QMouseEvent *event);

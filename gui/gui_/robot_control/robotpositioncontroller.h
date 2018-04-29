@@ -46,21 +46,19 @@ public:
 
 signals:
     void connectionDrop();
-    void deltasUpdated(Joints* d);
+    void jointsUpdated(Joints* d);
 public slots:
     void handleTelemetry(char *data);
-
 private:
     int getMotorPositionById(int id);
     void setAngleByMotorId(int id, int position);
     bool hasPositionData(int id);
-    Joints* deltas;
+    Joints* j;
     double flippersAngle; // 230.0 -> -93.0
     double waistAngle; // -214.2 -> 137.3
     double elbowAngle; // -216.9 -> 0.0
     double shoulderAngle; // -16.4 -> 114.2
     double neckAngle; // 188.8 -> 0.0
-
     uint_fast8_t joints = 0;
 
 };

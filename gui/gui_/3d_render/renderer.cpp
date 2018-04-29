@@ -43,10 +43,10 @@ void Renderer::prepare()
     glBindVertexArray(mesh->mVAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, mesh->mVBO);
-    glBufferData(GL_ARRAY_BUFFER, mesh->mVertices.size() * sizeof(Vertex), &mesh->mVertices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, mesh->mVertices.size() * sizeof(Vertex), &mesh->mVertices[0], GL_DYNAMIC_DRAW);
       
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->mEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->mIndices.size() * sizeof(GLuint), &mesh->mIndices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->mIndices.size() * sizeof(GLuint), &mesh->mIndices[0], GL_DYNAMIC_DRAW);
      
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, pos));
@@ -129,7 +129,39 @@ void Renderer::render()
   }
 
   shader.unuse();
-}  
+}
+
+void Renderer::update()
+{
+    for (Mesh* mesh : mActiveScene->mainModel.mMeshes) {
+//      glGenVertexArrays(1, &mesh->mVAO);
+//      glGenBuffers(1, &mesh->mVBO);
+//      glGenBuffers(1, &mesh->mEBO);
+
+//      glBindVertexArray(mesh->mVAO);
+
+      glBindBuffer(GL_ARRAY_BUFFER, mesh->mVBO);
+      glBufferData(GL_ARRAY_BUFFER, mesh->mVertices.size() * sizeof(Vertex), &mesh->mVertices[0], GL_DYNAMIC_DRAW);
+
+//      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->mEBO);
+//      glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh->mIndices.size() * sizeof(GLuint), &mesh->mIndices[0], GL_DYNAMIC_DRAW);
+
+//      glEnableVertexAttribArray(0);
+//      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, pos));
+
+//      glEnableVertexAttribArray(1);
+//      glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, color));
+
+//      glEnableVertexAttribArray(2);
+//      glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, nor));
+
+//      glEnableVertexAttribArray(3);
+//      glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)offsetof(Vertex, texCoords));
+
+//      glBindVertexArray(0);
+
+    }
+}
 
 
 void Renderer::resize(int width, int height)

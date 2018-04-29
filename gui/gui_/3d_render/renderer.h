@@ -17,6 +17,7 @@ public:
   void prepare();
   void cleanUp();
   void render();
+  void update();
   void resize(int width, int height);
   void setActiveScene(Scene &scene);
 

@@ -120,6 +120,7 @@ int MainWindow::validateValue(QString value, int max){
 //Destructor
 MainWindow::~MainWindow()
 {
+    disconnect(robot->controller, SIGNAL(deltasUpdated(Joints*)), renderWidget, SLOT(deltasUpdated(Joints*)));
 //    delete dialog;
     if (robot->isConnected || robot->isConnecting){
         robot->disconnectFromEngineer();
@@ -135,25 +136,11 @@ void MainWindow::loadModel()
 //    QString filename = "/home/avispa/Workspace/Engineer_Gui/3d_model/robot_test1.dae";
     QString filename = "/home/avispa/untitled1.dae";
 
-        Model m;
-        m.loadFromFilename(filename.toStdString());
+//        Model m;
+//        m.loadFromFilename(filename.toStdString());
 
-//        glm::mat4 mat(0.0f);
-//        for (Vertex& v : m.mMeshes[1].mVertices) {
-//            v.pos = mat * v.pos;
-//            double a = 1;
-//            double cosa = cos(a);
-//            double sina = sin(a);
-//            v.pos.y = v.pos.y * cosa - v.pos.z * sina;
-//            v.pos.z = v.pos.y * sina + v.pos.z * cosa;
-//        }
-//        for (Mesh& mesh : m.mMeshes) {
-//            for (Vertex& v : mesh.mVertices) {
-
-//            }
-//        }
-//        connect(robot->controller, SIGNAL(deltasUpdated(Joints*)), renderWidget, SLOT(deltasUpdated(Joints*)));
-        renderWidget->mScene.mainModel = m;
+        connect(robot->controller, &RobotPositionController::jointsUpdated, renderWidget, &RenderWidget::jointsUpdated);
+        renderWidget->mScene.mainModel.loadFromFilename(filename.toStdString());
         renderWidget->mRenderer.cleanUp();
         renderWidget->mScene.mainCamera.reset();
         renderWidget->initializeGL();

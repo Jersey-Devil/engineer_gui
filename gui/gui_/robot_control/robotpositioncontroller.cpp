@@ -13,7 +13,7 @@ int calcSpeed(int, int, int, RobotPositionController*);
 RobotPositionController::RobotPositionController(Robot *r): RobotController(r)
 {
     joints = 0U;
-    deltas = new Joints;
+    j = new Joints;
     positionInfo = new TelemetryPacket;
 }
 
@@ -186,17 +186,18 @@ double RobotPositionController::getAngleRange(int id)
 
 void RobotPositionController::stopTask()
 {
-    if (joints != 0U) joints = 0U;
+    joints = 0U;
 }
 
 void RobotPositionController::handleTelemetry(char *data){
     delete positionInfo;
     positionInfo = (TelemetryPacket*) data;
-    for (u_int8_t i = 0; i < positionInfo->NUMBER_OF_MOTORS; ++i) {
+    for (size_t i = 0; i < positionInfo->NUMBER_OF_MOTORS; ++i) {
         if (!hasPositionData(positionInfo->M_DATA[i].DEVICE_ID)) continue;
         int speed = 10000;
         switch (positionInfo->M_DATA[i].DEVICE_ID) {
         case 4: //elbow 1
+            j->elbow = getAngleById(4,positionInfo->M_DATA[i].POSITION);
             if ((joints & 1U) == 0) {
                 setAngleByMotorId(4, positionInfo->M_DATA[i].POSITION);
             } else {
@@ -214,6 +215,7 @@ void RobotPositionController::handleTelemetry(char *data){
             }
             break;
         case 5: //neck 10
+            j->neck = getAngleById(5,positionInfo->M_DATA[i].POSITION);
             if ((joints >> 1U & 1U) == 0) {
                 setAngleByMotorId(5, positionInfo->M_DATA[i].POSITION);
             } else {
@@ -239,6 +241,7 @@ void RobotPositionController::handleTelemetry(char *data){
             }
             break;
         case 6: //shoulder 100
+            j->shoulder = getAngleById(6,positionInfo->M_DATA[i].POSITION);
             if ((joints >> 2U & 1U) == 0) {
                 setAngleByMotorId(6, positionInfo->M_DATA[i].POSITION);
             } else {
@@ -258,6 +261,7 @@ void RobotPositionController::handleTelemetry(char *data){
             }
             break;
         case 7: //waist 1000
+            j->waist = getAngleById(7,positionInfo->M_DATA[i].POSITION);
             if ((joints >> 3U & 1U) == 0) {
                 setAngleByMotorId(7, positionInfo->M_DATA[i].POSITION);
             } else {
@@ -274,6 +278,7 @@ void RobotPositionController::handleTelemetry(char *data){
             }
             break;
         case 10: //flippers 10000
+            j->flippers = getAngleById(10,positionInfo->M_DATA[i].POSITION);
             if ((joints >> 4U & 1U) == 0) {
                 setAngleByMotorId(10, positionInfo->M_DATA[i].POSITION);
             } else {
@@ -293,8 +298,9 @@ void RobotPositionController::handleTelemetry(char *data){
             break;
         }
     }
-    emit deltasUpdated(deltas);
+    emit jointsUpdated(j);
 }
+
 int getMinSpeed(int id) {
     switch (id) {
     case 4:
@@ -436,23 +442,23 @@ void RobotPositionController::setAngleByMotorId(int id, int position)
     double angle = getAngleById(id, position);
     switch (id) {
     case 4: //elbow
-        deltas->elbow = elbowAngle - angle;
+        j->elbow = elbowAngle - angle;
         elbowAngle = angle;
         break;
     case 5: //neck
-        deltas->neck = neckAngle - angle;
+        j->neck = neckAngle - angle;
         neckAngle = angle;
         break;
     case 6: //shoulder
-        deltas->shoulder = shoulderAngle - angle;
+        j->shoulder = shoulderAngle - angle;
         shoulderAngle = angle;
         break;
     case 7: //waist
-        deltas->waist = waistAngle - angle;
+        j->waist = waistAngle - angle;
         waistAngle = angle;
         break;
     case 10: //flippers
-        deltas->flippers = flippersAngle - angle;
+        j->flippers = flippersAngle - angle;
         flippersAngle = angle;
         break;
     default:

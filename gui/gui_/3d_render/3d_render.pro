@@ -37,7 +37,8 @@ HEADERS += \
     scene.h \
     shader.h \
     stb_image.h \
-    texture.h
+    texture.h \
+    ../robot_control/joints.h
 
 INCLUDEPATH += ./glm
 

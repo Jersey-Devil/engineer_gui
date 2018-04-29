@@ -2,6 +2,7 @@
 #define MODEL_H
 
 #include "mesh.h"
+#include "../robot_control/joints.h"
 #include <vector>
 #include <string>
 #include <QObject>
@@ -13,8 +14,6 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
-struct Joints;
 
 class Model {
 public:
@@ -42,6 +41,7 @@ private:
   Mesh* find(std::string name);
   std::string mCurrentFolder;
   glm::mat4 mModelMatrix;
+  Joints* joints;
   Mesh* root;
   Mesh* loadMesh(const aiMesh*, const aiScene*scene, Mesh *parent);
   void applyTransform(Mesh* mesh, const glm::mat4 &rot);

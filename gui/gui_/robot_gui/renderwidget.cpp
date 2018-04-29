@@ -1,4 +1,5 @@
 #include "renderwidget.h"
+#include <QDebug>
 
 RenderWidget::RenderWidget(QWidget *parent) :
     QOpenGLWidget(parent)
@@ -28,13 +29,15 @@ void RenderWidget::resizeGL(int w, int h)
     mRenderer.resize(w,h);
 }
 
-void RenderWidget::deltasUpdated(Joints *j)
+void RenderWidget::jointsUpdated(Joints *j)
 {
+    qDebug() << "upd";
     mScene.mainModel.rotateFlippers(j->flippers);
     mScene.mainModel.rotateWaist(j->waist);
     mScene.mainModel.rotateShoulder(j->shoulder);
     mScene.mainModel.rotateElbow(j->elbow);
     mScene.mainModel.rotateNeck(j->neck);
+    mRenderer.update();
     update();
 }
 
