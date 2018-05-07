@@ -187,6 +187,14 @@ double RobotPositionController::getAngleRange(int id)
 void RobotPositionController::stopTask()
 {
     joints = 0U;
+//    j->waist = 0;
+//    j->elbow = 0;
+//    j->flippers = 180;
+//    j->neck = 12.5;
+//    j->shoulder = 0;
+//    timer = new QTimer;
+//    connect(timer, &QTimer::timeout, this, &RobotPositionController::testModel);
+//    timer->start(500);
 }
 
 void RobotPositionController::handleTelemetry(char *data){
@@ -278,7 +286,8 @@ void RobotPositionController::handleTelemetry(char *data){
             }
             break;
         case 10: //flippers 10000
-            j->flippers = getAngleById(10,positionInfo->M_DATA[i].POSITION);
+            this->j->flippers = getAngleById(10,positionInfo->M_DATA[i].POSITION);
+//            qDebug() << "j.flippers = " << j->flippers; //good
             if ((joints >> 4U & 1U) == 0) {
                 setAngleByMotorId(10, positionInfo->M_DATA[i].POSITION);
             } else {
@@ -298,6 +307,13 @@ void RobotPositionController::handleTelemetry(char *data){
             break;
         }
     }
+    qDebug() << "j.flippers bad = " << this->j->flippers; //bad
+    emit jointsUpdated(j);
+}
+
+void RobotPositionController::testModel()
+{
+    j->waist += 1.0;
     emit jointsUpdated(j);
 }
 
@@ -310,7 +326,7 @@ int getMinSpeed(int id) {
     case 6:
         return 7000;
     case 7:
-        return 6500;
+        return 7000;
     case 10:
     default:
         return 0;
@@ -442,23 +458,24 @@ void RobotPositionController::setAngleByMotorId(int id, int position)
     double angle = getAngleById(id, position);
     switch (id) {
     case 4: //elbow
-        j->elbow = elbowAngle - angle;
+        j->elbow = angle;
         elbowAngle = angle;
         break;
     case 5: //neck
-        j->neck = neckAngle - angle;
+        j->neck = angle;
         neckAngle = angle;
         break;
     case 6: //shoulder
-        j->shoulder = shoulderAngle - angle;
+        j->shoulder = angle;
         shoulderAngle = angle;
         break;
     case 7: //waist
-        j->waist = waistAngle - angle;
+        j->waist = angle;
         waistAngle = angle;
         break;
     case 10: //flippers
-        j->flippers = flippersAngle - angle;
+        j->flippers = angle;
+//        qDebug() << "setangle flippers " << j->flippers;
         flippersAngle = angle;
         break;
     default:

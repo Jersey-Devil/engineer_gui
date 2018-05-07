@@ -42,7 +42,7 @@ FORMS    += mainwindow.ui \
     settingsdialog.ui \
     rendersettings.ui
 
-LIBS += -lGL -lGLEW -lassimp
+LIBS += -lGL -lGLEW -lassimp -lgomp
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../robot_control/release/ -lrobot_control
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../robot_control/debug/ -lrobot_control

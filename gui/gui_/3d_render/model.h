@@ -5,6 +5,7 @@
 #include "../robot_control/joints.h"
 #include <vector>
 #include <string>
+#include <omp.h>
 #include <QObject>
 
 #include <assimp/Importer.hpp>

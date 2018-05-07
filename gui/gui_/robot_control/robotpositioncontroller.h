@@ -49,11 +49,13 @@ signals:
     void jointsUpdated(Joints* d);
 public slots:
     void handleTelemetry(char *data);
+    void testModel();
 private:
     int getMotorPositionById(int id);
     void setAngleByMotorId(int id, int position);
     bool hasPositionData(int id);
     Joints* j;
+    QTimer* timer;
     double flippersAngle; // 230.0 -> -93.0
     double waistAngle; // -214.2 -> 137.3
     double elbowAngle; // -216.9 -> 0.0

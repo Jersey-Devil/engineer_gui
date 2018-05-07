@@ -8,12 +8,12 @@
 
 Model::Model()
 {
-    joints = new Joints; // change this shit
+    joints = new Joints; // as on model
     joints->elbow = 0.0;
     joints->waist = 0.0;
-    joints->shoulder = 0.0;
-    joints->neck = 12.5;
-    joints->flippers = 180.0;
+    joints->shoulder = 2.5;
+    joints->neck = 11.4;
+    joints->flippers = 175.0;
 }
 
 glm::mat4 makeRotMat(float degree, int axis) {
@@ -35,13 +35,14 @@ Model::~Model()
 
 void Model::rotateFlippers(float angle)
 {
+    qDebug() << "angle = " << angle << " res = " << angle - joints->flippers;
     applyTransform(flippers, makeRotMat(angle - joints->flippers, 1));
     joints->flippers = angle;
 }
 
 void Model::rotateWaist(float angle)
 {
-    applyTransform(sea, makeRotMat(angle - joints->waist, 3));
+    applyTransform(sea, makeRotMat(-(angle - joints->waist), 3));
     joints->waist = angle;
 }
 
@@ -237,9 +238,10 @@ void Model::applyTransform(Mesh *mesh, const glm::mat4 &rot)
     if (rot != glm::mat4(1.0f)) {
         glm::mat4 mat = mesh->absTransf * rot * glm::inverse(mesh->absTransf);
         glm::mat4 mWorldIT = glm::transpose(glm::inverse(mat));
-        for (Vertex& v : mesh->mVertices) {
-            v.pos = mat * v.pos;
-            v.nor = glm::normalize(mWorldIT * v.nor);
+        #pragma omp parallel for
+        for (auto it = mesh->mVertices.begin(); it < mesh->mVertices.end(); ++it) {
+            it->pos = mat * it->pos;
+            it->nor = glm::normalize(mWorldIT * it->nor);
         }
         if (mesh->parent) {
             mesh->absTransf = mesh->absTransf * rot;
@@ -255,9 +257,10 @@ void Model::_applyTransform(Mesh *mesh, const glm::mat4 &mat)
 {
     if (mat != glm::mat4(1.0f)) {
         glm::mat4 mWorldIT = glm::transpose(glm::inverse(mat));
-        for (Vertex& v : mesh->mVertices) {
-            v.pos = mat * v.pos;
-            v.nor = glm::normalize(mWorldIT * v.nor);
+        #pragma omp parallel for
+        for (auto it = mesh->mVertices.begin(); it < mesh->mVertices.end(); ++it) {
+            it->pos = mat * it->pos;
+            it->nor = glm::normalize(mWorldIT * it->nor);
         }
     }
 }
@@ -265,9 +268,10 @@ void Model::_applyTransform(Mesh *mesh, const glm::mat4 &mat)
 void Model::applyTransformCascade(Mesh* mesh, const glm::mat4 &mat) {
 
     glm::mat4 mWorldIT = glm::transpose(glm::inverse(mat));
-    for (Vertex& v : mesh->mVertices) {
-        v.pos = mat * v.pos;
-        v.nor = glm::normalize(mWorldIT * v.nor);
+    #pragma omp parallel for
+    for (auto it = mesh->mVertices.begin(); it < mesh->mVertices.end(); ++it) {
+        it->pos = mat * it->pos;
+        it->nor = glm::normalize(mWorldIT * it->nor);
     }
     mesh->absTransf = mesh->parent->absTransf * mesh->relTransf;
 //    mesh->relTransf = glm::inverse(mesh->parent->absTransf * glm::inverse(mesh->absTransf));

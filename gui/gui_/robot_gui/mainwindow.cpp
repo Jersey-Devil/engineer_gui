@@ -120,7 +120,7 @@ int MainWindow::validateValue(QString value, int max){
 //Destructor
 MainWindow::~MainWindow()
 {
-    disconnect(robot->controller, SIGNAL(deltasUpdated(Joints*)), renderWidget, SLOT(deltasUpdated(Joints*)));
+    disconnect(robot->controller, &RobotPositionController::jointsUpdated, renderWidget, &RenderWidget::jointsUpdated);
 //    delete dialog;
     if (robot->isConnected || robot->isConnecting){
         robot->disconnectFromEngineer();

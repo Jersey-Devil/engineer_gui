@@ -22,6 +22,11 @@ INCLUDEPATH += /usr/local/include/c++/7.2.0
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+QMAKE_CXXFLAGS += -msse3 -fopenmp
+QMAKE_LFLAGS += -fopenmp
+
+LIBS += -lGL -lGLEW -lassimp -lgomp -lpthreads
+
 SOURCES += \
     camera.cpp \
     model.cpp \
@@ -42,7 +47,6 @@ HEADERS += \
 
 INCLUDEPATH += ./glm
 
-LIBS += -lGL -lGLEW -lassimp
 unix {
     target.path = /usr/lib
     INSTALLS += target

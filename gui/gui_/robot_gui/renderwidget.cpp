@@ -31,7 +31,8 @@ void RenderWidget::resizeGL(int w, int h)
 
 void RenderWidget::jointsUpdated(Joints *j)
 {
-    qDebug() << "upd";
+//    qDebug() << "upd";
+//    qDebug() << "flippers j = " << j->flippers;
     mScene.mainModel.rotateFlippers(j->flippers);
     mScene.mainModel.rotateWaist(j->waist);
     mScene.mainModel.rotateShoulder(j->shoulder);

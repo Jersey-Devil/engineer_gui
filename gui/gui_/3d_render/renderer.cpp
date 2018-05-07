@@ -133,6 +133,7 @@ void Renderer::render()
 
 void Renderer::update()
 {
+    if (!glewIsExtensionSupported ( "GL_ARB_vertex_buffer_object" )) return;
     for (Mesh* mesh : mActiveScene->mainModel.mMeshes) {
 //      glGenVertexArrays(1, &mesh->mVAO);
 //      glGenBuffers(1, &mesh->mVBO);

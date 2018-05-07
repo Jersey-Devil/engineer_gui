@@ -18,10 +18,6 @@ public:
   void unuse();
   void release();
 
-  // I wanted to write clean reusable template "set" function.
-  // But templates in c++ give me headaches.
-  // The worst thing in language !!!
-
   void set(const char *name, float value) {
     glUniform1f(glGetUniformLocation(mProgram, name), value);
   }
