@@ -187,14 +187,6 @@ double RobotPositionController::getAngleRange(int id)
 void RobotPositionController::stopTask()
 {
     joints = 0U;
-//    j->waist = 0;
-//    j->elbow = 0;
-//    j->flippers = 180;
-//    j->neck = 12.5;
-//    j->shoulder = 0;
-//    timer = new QTimer;
-//    connect(timer, &QTimer::timeout, this, &RobotPositionController::testModel);
-//    timer->start(500);
 }
 
 void RobotPositionController::handleTelemetry(char *data){
@@ -287,7 +279,6 @@ void RobotPositionController::handleTelemetry(char *data){
             break;
         case 10: //flippers 10000
             this->j->flippers = getAngleById(10,positionInfo->M_DATA[i].POSITION);
-//            qDebug() << "j.flippers = " << j->flippers; //good
             if ((joints >> 4U & 1U) == 0) {
                 setAngleByMotorId(10, positionInfo->M_DATA[i].POSITION);
             } else {
@@ -307,7 +298,6 @@ void RobotPositionController::handleTelemetry(char *data){
             break;
         }
     }
-    qDebug() << "j.flippers bad = " << this->j->flippers; //bad
     emit jointsUpdated(j);
 }
 
@@ -475,7 +465,6 @@ void RobotPositionController::setAngleByMotorId(int id, int position)
         break;
     case 10: //flippers
         j->flippers = angle;
-//        qDebug() << "setangle flippers " << j->flippers;
         flippersAngle = angle;
         break;
     default:

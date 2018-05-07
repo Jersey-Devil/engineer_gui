@@ -17,7 +17,7 @@
 #define ADDRESS "10.42.0.1"
 #else
 #define ADDRESS "127.0.0.1"
-#define ADDRESS "10.42.0.1"
+//#define ADDRESS "10.42.0.1"
 #endif
 
 /**
@@ -57,9 +57,10 @@ void UDPClient::listenRobot(){
     if(!isConntected){
         isConntected = true;
         emit controller->connectedToRobot();
-        if (QString(ADDRESS) != "127.0.0.1")
+        if (QString(ADDRESS) != "127.0.0.1") {
             connect(connectionTimer, SIGNAL(timeout()), this->controller, SIGNAL(connectionDrop()));
-        connectionTimer->start(5000);
+            connectionTimer->start(5000);
+        }
     }
 
     do {
@@ -176,6 +177,7 @@ void UDPClient::disconnectFromRobot(){
     disconnect(m_pudp,SIGNAL(readyRead()),this,SLOT(listenRobot()));
     disconnect(m_pudp,SIGNAL(connected()),this,SLOT(startTimerTask()));
     disconnect(timer, SIGNAL(timeout()), this, SLOT(sendLivePackets()));
-    disconnect(connectionTimer, SIGNAL(timeout()), this->controller, SIGNAL(connectionDrop()));
+    if (QString(ADDRESS) != "127.0.0.1")
+        disconnect(connectionTimer, SIGNAL(timeout()), this->controller, SIGNAL(connectionDrop()));
 
 }

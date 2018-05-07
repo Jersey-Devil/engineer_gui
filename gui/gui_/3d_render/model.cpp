@@ -106,7 +106,6 @@ void Model::loadFromFilename(std::string filename)
 
   mCurrentFolder = filename.substr(0, filename.find_last_of("/"));
 
-//  computeAbsoluteTransform(scene->mRootNode);
   iterateNode(scene->mRootNode, scene, nullptr, glm::mat4(1.0f));
   root = mMeshes[0];
   flippers = find("flippers");
@@ -114,22 +113,6 @@ void Model::loadFromFilename(std::string filename)
   sea = find("s-e-arm");
   ena = find("e-n-arm");
   head = find("head");
-
-//  rotateWaist(30);
-//  rotateFlippers(30);
-//  rotateShoulder(-30);
-//  rotateFlippers(-10);
-//  rotateNeck(20);
-//  rotateShoulder(5);
-//  rotateWaist(-10);
-//  rotateNeck(-10);
-//  rotateFlippers(10);
-//  rotateShoulder(10);
-//  rotateWaist(10);
-//  rotateNeck(10);
-//  rotateShoulder(40);
-//  rotateFlippers(-50);
-//  rotateElbow(-30);
 }
 
 void Model::iterateNode(const aiNode *node, const aiScene *scene, Mesh* parent, glm::mat4 tf)
@@ -160,7 +143,6 @@ void Model::iterateNode(const aiNode *node, const aiScene *scene, Mesh* parent, 
 Mesh* Model::loadMesh(const aiMesh *asMesh, const aiScene *scene, Mesh* parent)
 {
   std::vector<Vertex> vertices;
-//    qDebug() << "loaded " << asMesh->mName.C_Str() << " transformed " << transforms.size();
   for (size_t i = 0; i < asMesh->mNumVertices; i++) {
     Vertex vertex;
     glm::vec4 vect;
@@ -274,18 +256,6 @@ void Model::applyTransformCascade(Mesh* mesh, const glm::mat4 &mat) {
         it->nor = glm::normalize(mWorldIT * it->nor);
     }
     mesh->absTransf = mesh->parent->absTransf * mesh->relTransf;
-//    mesh->relTransf = glm::inverse(mesh->parent->absTransf * glm::inverse(mesh->absTransf));
-
-
-
-//    mesh->relTransf = glm::inverse(rot) * mesh->relTransf;
-
-//    mesh->absTransf = mesh->absTransf * rot;
-//    mesh->relTransf = rot * mesh->relTransf * glm::inverse(rot);
-//    mesh->absTransf = mesh->parent->absTransf * mesh->relTransf * rot;
-
-//    mesh->relTransf = rot * mesh->relTransf;
-//    mesh->absTransf = mesh->parent->absTransf * mesh->relTransf;
 
 
     for (size_t i = 0; i < mesh->childrenCount; ++i) {
@@ -296,21 +266,17 @@ void Model::applyTransformCascade(Mesh* mesh, const glm::mat4 &mat) {
 
 void Model::applyTransform(aiMesh* mesh, const aiMatrix4x4& mat)
 {
-//    glm::mat4 mat1 = aiToGlm(mat);
-    // Check whether we need to transform the coordinates at all
     if (!mat.IsIdentity()) {
 
         if (mesh->HasPositions()) {
             for (unsigned int i = 0; i < mesh->mNumVertices; ++i) {
                 mesh->mVertices[i] = mat * mesh->mVertices[i];
-//                mesh->mVertices[i] = glmToAi(mat1 * aiToGlm(mesh->mVertices[i]));
             }
         }
         if (mesh->HasNormals() || mesh->HasTangentsAndBitangents()) {
             aiMatrix4x4 mWorldIT = mat;
             mWorldIT.Inverse().Transpose();
 
-            // TODO: implement Inverse() for aiMatrix3x3
             aiMatrix3x3 m = aiMatrix3x3(mWorldIT);
 
             if (mesh->HasNormals()) {
@@ -339,21 +305,6 @@ void Model::computeAbsoluteTransform(aiNode* pcNode)
     }
 }
 
-//void Model::calcVertices(Mesh* m, glm::mat4 mat) {
-////    mat = mat * m->relTransf;
-//    mat = m->relTransf;
-//    glm::mat4 mWorldIT = glm::transpose(glm::inverse(mat));
-//    m->mVertices.reserve(m->relVertices.size());
-//    for (Vertex v : m->relVertices) {
-////            v.pos = mat * v.pos;
-////            v.nor = glm::normalize(mWorldIT * v.nor);
-//        m->mVertices.emplace_back(v);
-//    }
-//    for (size_t i = 0; i < m->childrenCount; ++i) {
-//        calcVertices(m->children[i], mat);
-//    }
-//}
-
 std::vector<Texture> Model::getTextures(const aiMaterial *material, TextureType textureType)
 {
   aiTextureType type;
@@ -371,7 +322,6 @@ std::vector<Texture> Model::getTextures(const aiMaterial *material, TextureType 
     aiString aiStr;
     material->GetTexture(type, i, &aiStr);
 
-    // aiString and std string no compatible. We convert aiString to c string then convert to std string.
     std::string path = mCurrentFolder + "/" + std::string(aiStr.C_Str());
     Texture texture(path.c_str(), textureType);
     textures.push_back(texture);
